@@ -3,9 +3,9 @@ package spatutorial.client.services
 import autowire._
 import diode._
 import diode.data._
-import diode.util._
 import diode.react.ReactConnector
-import spatutorial.shared.{Api, FunctionParameters, InvoiceItem, TodoItem}
+import diode.util._
+import spatutorial.shared.{Api, InvoiceItem, TodoItem}
 import boopickle.Default._
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -18,14 +18,6 @@ case class UpdateAllTodos(todos: Seq[TodoItem]) extends Action
 case class UpdateTodo(item: TodoItem) extends Action
 
 case class DeleteTodo(item: TodoItem) extends Action
-// Actions
-case object RefreshFunctions extends Action
-
-case class UpdateAllFunctions(Functions: Seq[FunctionParameters]) extends Action
-
-case class UpdateFunction(item: FunctionParameters) extends Action
-
-case class DeleteFunction(item: FunctionParameters) extends Action
 
 // invoice actions
 case object RefreshInvoices extends Action
@@ -57,19 +49,6 @@ case class Todos(items: Seq[TodoItem]) {
     }
   }
   def remove(item: TodoItem) = Todos(items.filterNot(_ == item))
-}
-case class Function(parameters: Seq[FunctionParameters]) {
-  def updated(newParameters: FunctionParameters) = {
-    parameters.indexWhere(_.id == newParameters.id) match {
-      case -1 =>
-        // add new
-        Function(parameters :+ newParameters)
-      case idx =>
-        // replace old
-        Function(parameters.updated(idx, newParameters))
-    }
-  }
-  def remove(item: FunctionParameters) = Function(parameters.filterNot(_ == item))
 }
 
 case class Invoices(items: Seq[InvoiceItem]) {

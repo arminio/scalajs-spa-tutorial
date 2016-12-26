@@ -31,13 +31,12 @@ object SPAMain extends js.JSApp {
     import dsl._
 
     val todoWrapper = SPACircuit.connect(_.todos)
-    val functionWrapper = SPACircuit.connect(_.todos)
+
     val invoiceWrapper = SPACircuit.connect(rootModel => rootModel.invoices)
 
     // wrap/connect components to the circuit
     (staticRoute(root, DashboardLoc) ~> renderR(ctl => SPACircuit.wrap(_.motd)(proxy => Dashboard(ctl, proxy)))
       | staticRoute("#todo", TodoLoc) ~> renderR(ctl => todoWrapper(Todo(_)))
-      | staticRoute("#function", FuncLoc) ~> renderR(ctl => functionWrapper(Todo(_)))
       | staticRoute("#invoice", InvoiceLoc) ~> renderR(ctl => invoiceWrapper(Invoice(_)))
       ).notFound(redirectToPage(DashboardLoc)(Redirect.Replace))
   }.renderWith(layout)
