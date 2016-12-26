@@ -5,8 +5,9 @@ import diode._
 import diode.data._
 import diode.util._
 import diode.react.ReactConnector
-import spatutorial.shared.{TodoItem, Api}
+import spatutorial.shared.{Api, FunctionParameters, InvoiceItem, TodoItem}
 import boopickle.Default._
+
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 // Actions
@@ -17,13 +18,32 @@ case class UpdateAllTodos(todos: Seq[TodoItem]) extends Action
 case class UpdateTodo(item: TodoItem) extends Action
 
 case class DeleteTodo(item: TodoItem) extends Action
+// Actions
+case object RefreshFunctions extends Action
+
+case class UpdateAllFunctions(Functions: Seq[FunctionParameters]) extends Action
+
+case class UpdateFunction(item: FunctionParameters) extends Action
+
+case class DeleteFunction(item: FunctionParameters) extends Action
+
+// invoice actions
+case object RefreshInvoices extends Action
+
+case class UpdateAllInvoices(invoices: Seq[InvoiceItem]) extends Action
+
+case class UpdateInvoice(item: InvoiceItem) extends Action
+
+case class DeleteInvoice(item: InvoiceItem) extends Action
+
+
 
 case class UpdateMotd(potResult: Pot[String] = Empty) extends PotAction[String, UpdateMotd] {
   override def next(value: Pot[String]) = UpdateMotd(value)
 }
 
 // The base model of our application
-case class RootModel(todos: Pot[Todos], motd: Pot[String])
+case class RootModel(todos: Pot[Todos], motd: Pot[String], invoices: Pot[Invoices])
 
 case class Todos(items: Seq[TodoItem]) {
   def updated(newItem: TodoItem) = {
@@ -38,6 +58,33 @@ case class Todos(items: Seq[TodoItem]) {
   }
   def remove(item: TodoItem) = Todos(items.filterNot(_ == item))
 }
+case class Function(parameters: Seq[FunctionParameters]) {
+  def updated(newParameters: FunctionParameters) = {
+    parameters.indexWhere(_.id == newParameters.id) match {
+      case -1 =>
+        // add new
+        Function(parameters :+ newParameters)
+      case idx =>
+        // replace old
+        Function(parameters.updated(idx, newParameters))
+    }
+  }
+  def remove(item: FunctionParameters) = Function(parameters.filterNot(_ == item))
+}
+
+case class Invoices(items: Seq[InvoiceItem]) {
+  def updated(newItem: InvoiceItem) = {
+    items.indexWhere(_.id == newItem.id) match {
+      case -1 =>
+        // add new
+        Invoices(items :+ newItem)
+      case idx =>
+        // replace old
+        Invoices(items.updated(idx, newItem))
+    }
+  }
+  def remove(item: InvoiceItem) = Invoices(items.filterNot(_ == item))
+}
 
 /**
   * Handles actions related to todos
@@ -45,7 +92,7 @@ case class Todos(items: Seq[TodoItem]) {
   * @param modelRW Reader/Writer to access the model
   */
 class TodoHandler[M](modelRW: ModelRW[M, Pot[Todos]]) extends ActionHandler(modelRW) {
-  override def handle = {
+  override def handle: PartialFunction[Any, ActionResult[M]] = {
     case RefreshTodos =>
       effectOnly(Effect(AjaxClient[Api].getAllTodos().call().map(UpdateAllTodos)))
     case UpdateAllTodos(todos) =>
@@ -57,6 +104,26 @@ class TodoHandler[M](modelRW: ModelRW[M, Pot[Todos]]) extends ActionHandler(mode
     case DeleteTodo(item) =>
       // make a local update and inform server
       updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteTodo(item.id).call().map(UpdateAllTodos)))
+  }
+}
+/**
+  * Handles actions related to invoices
+  *
+  * @param modelRW Reader/Writer to access the model
+  */
+class InvoiceHandler[M](modelRW: ModelRW[M, Pot[Invoices]]) extends ActionHandler(modelRW) {
+  override def handle: PartialFunction[Any, ActionResult[M]] = {
+    case RefreshInvoices =>
+      effectOnly(Effect(AjaxClient[Api].getAllInvoices().call().map(UpdateAllInvoices)))
+    case UpdateAllInvoices(invoices) =>
+      // got new invoices, update model
+      updated(Ready(Invoices(invoices)))
+    case UpdateInvoice(item) =>
+      // make a local update and inform server
+      updated(value.map(_.updated(item)), Effect(AjaxClient[Api].updateInvoice(item).call().map(UpdateAllInvoices)))
+    case DeleteInvoice(item) =>
+      // make a local update and inform server
+      updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteInvoice(item.id).call().map(UpdateAllInvoices)))
   }
 }
 
@@ -78,10 +145,11 @@ class MotdHandler[M](modelRW: ModelRW[M, Pot[String]]) extends ActionHandler(mod
 // Application circuit
 object SPACircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
   // initial application model
-  override protected def initialModel = RootModel(Empty, Empty)
+  override protected def initialModel = RootModel(Empty, Empty, Empty)
   // combine all handlers into one
   override protected val actionHandler = composeHandlers(
     new TodoHandler(zoomRW(_.todos)((m, v) => m.copy(todos = v))),
+    new InvoiceHandler(zoomRW(_.invoices)((m, v) => m.copy(invoices = v))),
     new MotdHandler(zoomRW(_.motd)((m, v) => m.copy(motd = v)))
   )
 }

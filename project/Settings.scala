@@ -54,6 +54,8 @@ object Settings {
     "com.vmunier" %% "scalajs-scripts" % versions.scalajsScripts,
     "org.webjars" % "font-awesome" % "4.3.0-1" % Provided,
     "org.webjars" % "bootstrap" % versions.bootstrap % Provided,
+    "com.amazonaws" % "aws-java-sdk" % "1.11.73",
+    "org.yaml" % "snakeyaml" % "1.17",
     "com.lihaoyi" %% "utest" % versions.uTest % Test
   ))
 

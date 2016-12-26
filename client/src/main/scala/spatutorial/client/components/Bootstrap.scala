@@ -1,5 +1,6 @@
 package spatutorial.client.components
 
+import japgolly.scalajs.react.ReactComponentC.ReqProps
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.univeq.UnivEq

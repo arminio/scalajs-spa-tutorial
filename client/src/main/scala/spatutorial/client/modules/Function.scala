@@ -13,64 +13,64 @@ import spatutorial.shared._
 
 import scalacss.ScalaCssReact._
 
-object Todo {
+object Function {
 
-  case class Props(proxy: ModelProxy[Pot[Todos]])
+  case class Props(proxy: ModelProxy[Pot[Function]])
 
-  case class State(selectedItem: Option[TodoItem] = None, showTodoForm: Boolean = false)
+  case class State(selectedItem: Option[FunctionParameters] = None, showFunctionForm: Boolean = false)
 
   class Backend($: BackendScope[Props, State]) {
     def mounted(props: Props) =
-      // dispatch a message to refresh the todos, which will cause TodoStore to fetch todos from the server
-      Callback.when(props.proxy().isEmpty)(props.proxy.dispatchCB(RefreshTodos))
+      // dispatch a message to refresh the Functions, which will cause FunctionStore to fetch Functions from the server
+      Callback.when(props.proxy().isEmpty)(props.proxy.dispatchCB(RefreshFunctions))
 
-    def editTodo(item: Option[TodoItem]) =
+    def editFunction(item: Option[FunctionParameters]) =
       // activate the edit dialog
-      $.modState(s => s.copy(selectedItem = item, showTodoForm = true))
+      $.modState(s => s.copy(selectedItem = item, showFunctionForm = true))
 
-    def todoEdited(item: TodoItem, cancelled: Boolean): CallbackTo[Unit] = {
+    def FunctionEdited(item: FunctionParameters, cancelled: Boolean): CallbackTo[Unit] = {
       val cb = if (cancelled) {
         // nothing to do here
-        Callback.log("Todo editing cancelled")
+        Callback.log("Function editing cancelled")
       } else {
-        Callback.log(s"Todo edited: $item") >>
-          $.props >>= (_.proxy.dispatchCB(UpdateTodo(item)))
+        Callback.log(s"Function edited: $item") >>
+          $.props >>= (_.proxy.dispatchCB(UpdateFunction(item)))
       }
       // hide the edit dialog, chain callbacks
-      cb >> $.modState(s => s.copy(showTodoForm = false))
+      cb >> $.modState(s => s.copy(showFunctionForm = false))
     }
 
     def render(p: Props, s: State) =
-      Panel(Panel.Props("What needs to be done"), <.div(
+      Panel(Panel.Props("##Title##"), <.div(
         p.proxy().renderFailed(ex => "Error loading"),
         p.proxy().renderPending(_ > 5000, _ => "Loading..."),
-        p.proxy().render(todos => TodoList(todos.items, item => p.proxy.dispatchCB(UpdateTodo(item)),
-          item => editTodo(Some(item)), item => p.proxy.dispatchCB(DeleteTodo(item)))),
-        Button(Button.Props(editTodo(None)), Icon.plusSquare, " New")),
+        p.proxy().render(Functions => FunctionList(Functions.parameters, item => p.proxy.dispatchCB(UpdateFunction(item)),
+          item => editFunction(Some(item)), item => p.proxy.dispatchCB(DeleteFunction(item)))),
+        Button(Button.Props(editFunction(None)), Icon.plusSquare, " New")),
         // if the dialog is open, add it to the panel
-        if (s.showTodoForm) TodoForm(TodoForm.Props(s.selectedItem, todoEdited))
+        if (s.showFunctionForm) FunctionForm(FunctionForm.Props(s.selectedItem, FunctionEdited))
         else // otherwise add an empty placeholder
           Seq.empty[ReactElement])
   }
 
   // create the React component for To Do management
-  val component = ReactComponentB[Props]("TODO")
-    .initialState(State()) // initial state from TodoStore
+  val component = ReactComponentB[Props]("Function")
+    .initialState(State()) // initial state from FunctionStore
     .renderBackend[Backend]
     .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(proxy: ModelProxy[Pot[Todos]]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[Pot[Function]]) = component(Props(proxy))
 }
 
-object TodoForm {
+object FunctionForm {
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props(item: Option[TodoItem], submitHandler: (TodoItem, Boolean) => Callback)
+  case class Props(item: Option[FunctionParameters], submitHandler: (FunctionParameters, Boolean) => Callback)
 
-  case class State(item: TodoItem, cancelled: Boolean = true)
+  case class State(item: FunctionParameters, cancelled: Boolean = true)
 
   class Backend(t: BackendScope[Props, State]) {
     def submitForm(): Callback = {
@@ -84,23 +84,23 @@ object TodoForm {
 
     def updateDescription(e: ReactEventI) = {
       val text = e.target.value
-      // update TodoItem content
+      // update FunctionItem content
       t.modState(s => s.copy(item = s.item.copy(content = text)))
     }
 
     def updatePriority(e: ReactEventI) = {
-      // update TodoItem priority
+      // update FunctionItem priority
       val newPri = e.currentTarget.value match {
-        case p if p == TodoHigh.toString => TodoHigh
-        case p if p == TodoNormal.toString => TodoNormal
-        case p if p == TodoLow.toString => TodoLow
+        case p if p == FunctionHigh.toString => FunctionHigh
+        case p if p == FunctionNormal.toString => FunctionNormal
+        case p if p == FunctionLow.toString => FunctionLow
       }
       t.modState(s => s.copy(item = s.item.copy(priority = newPri)))
     }
 
     def render(p: Props, s: State) = {
-      log.debug(s"User is ${if (s.item.id == "") "adding" else "editing"} a todo or two")
-      val headerText = if (s.item.id == "") "Add new todo" else "Edit todo"
+      log.debug(s"User is ${if (s.item.id == "") "adding" else "editing"} a Function or two")
+      val headerText = if (s.item.id == "") "Add new Function" else "Edit Function"
       Modal(Modal.Props(
         // header contains a cancel button (X)
         header = hide => <.span(<.button(^.tpe := "button", bss.close, ^.onClick --> hide, Icon.close), <.h4(headerText)),
@@ -116,17 +116,17 @@ object TodoForm {
           <.label(^.`for` := "priority", "Priority"),
           // using defaultValue = "Normal" instead of option/selected due to React
           <.select(bss.formControl, ^.id := "priority", ^.value := s.item.priority.toString, ^.onChange ==> updatePriority,
-            <.option(^.value := TodoHigh.toString, "High"),
-            <.option(^.value := TodoNormal.toString, "Normal"),
-            <.option(^.value := TodoLow.toString, "Low")
+            <.option(^.value := FunctionHigh.toString, "High"),
+            <.option(^.value := FunctionNormal.toString, "Normal"),
+            <.option(^.value := FunctionLow.toString, "Low")
           )
         )
       )
     }
   }
 
-  val component = ReactComponentB[Props]("TodoForm")
-    .initialState_P(p => State(p.item.getOrElse(TodoItem("", 0, "", TodoNormal, completed = false))))
+  val component = ReactComponentB[Props]("FunctionForm")
+    .initialState_P(p => State(p.item.getOrElse(FunctionParameters("", 0, "", FunctionNormal, completed = false))))
     .renderBackend[Backend]
     .build
 

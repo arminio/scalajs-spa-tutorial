@@ -4,7 +4,7 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
-import spatutorial.client.SPAMain.{DashboardLoc, Loc, TodoLoc}
+import spatutorial.client.SPAMain._
 import spatutorial.client.components.Bootstrap.CommonStyle
 import spatutorial.client.components.Icon._
 import spatutorial.client.components._
@@ -28,10 +28,35 @@ object MainMenu {
       todoCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount)
     )
   }
+  // build the Function menu item, showing the number of open Functions
+  private def buildFunctionMenu(props: Props): ReactElement = {
+    val FunctionCount = props.proxy().getOrElse(0)
+    <.span(
+      <.span("Function "),
+      FunctionCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, FunctionCount)
+    )
+  }
+
+  // build the Invoice menu item, showing the number of open invoices
+  private def buildInvoiceMenu(props: Props): ReactElement = {
+    val invoiceCount = props.proxy().getOrElse(0)
+    <.span(
+      <.span("Invoice "),
+      invoiceCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, invoiceCount)
+    )
+  }
+
+  def newIndex = {
+  var index = 0
+    index = index + 1
+    index
+  }
 
   private val menuItems = Seq(
     MenuItem(1, _ => "Dashboard", Icon.dashboard, DashboardLoc),
-    MenuItem(2, buildTodoMenu, Icon.check, TodoLoc)
+    MenuItem(2, buildTodoMenu, Icon.check, TodoLoc),
+    MenuItem(3, buildFunctionMenu, Icon.check, FuncLoc),
+    MenuItem(4, buildInvoiceMenu, Icon.check, InvoiceLoc)
   )
 
   private class Backend($: BackendScope[Props, Unit]) {

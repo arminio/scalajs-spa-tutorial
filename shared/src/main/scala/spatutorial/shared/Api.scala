@@ -12,4 +12,14 @@ trait Api {
 
   // delete a Todo
   def deleteTodo(itemId: String): Seq[TodoItem]
+
+  // get Invoice items
+  def getAllInvoices(): Seq[InvoiceItem]
+
+  // update a Invoice
+  def updateInvoice(item: InvoiceItem): Seq[InvoiceItem]
+
+  // delete a Invoice
+  def deleteInvoice(itemId: String): Seq[InvoiceItem]
+  
 }

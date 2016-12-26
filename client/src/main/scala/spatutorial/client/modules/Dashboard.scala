@@ -30,7 +30,7 @@ object Dashboard {
   // create the React component for Dashboard
   private val component = ReactComponentB[Props]("Dashboard")
     // create and store the connect proxy in state for later use
-    .initialState_P(props => State(props.proxy.connect(m => m)))
+    .initialState_P(props => State(props.proxy.connect((m: Pot[String]) => m)))
     .renderPS { (_, props, state) =>
       <.div(
         // header, MessageOfTheDay and chart components
