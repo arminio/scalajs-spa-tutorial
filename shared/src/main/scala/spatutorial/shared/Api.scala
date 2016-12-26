@@ -13,13 +13,13 @@ trait Api {
   // delete a Todo
   def deleteTodo(itemId: String): Seq[TodoItem]
 
-  // get Invoice items
-  def getAllInvoices(): Seq[InvoiceItem]
+  // get PageXX items
+  def getAllPageXXs(): Seq[PageXXItem]
 
-  // update a Invoice
-  def updateInvoice(item: InvoiceItem): Seq[InvoiceItem]
+  // update a PageXX
+  def updatePageXX(item: PageXXItem): Seq[PageXXItem]
 
-  // delete a Invoice
-  def deleteInvoice(itemId: String): Seq[InvoiceItem]
+  // delete a PageXX
+  def deletePageXX(itemId: String): Seq[PageXXItem]
   
 }

@@ -7,26 +7,26 @@ import spatutorial.shared._
 
 import scalacss.ScalaCssReact._
 
-object InvoiceList {
+object PageXXList {
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class InvoiceListProps(
-    items: Seq[InvoiceItem],
-    stateChange: InvoiceItem => Callback,
-    editItem: InvoiceItem => Callback,
-    deleteItem: InvoiceItem => Callback
+  case class PageXXListProps(
+    items: Seq[PageXXItem],
+    stateChange: PageXXItem => Callback,
+    editItem: PageXXItem => Callback,
+    deleteItem: PageXXItem => Callback
   )
 
-  private val InvoiceList = ReactComponentB[InvoiceListProps]("InvoiceList")
+  private val PageXXList = ReactComponentB[PageXXListProps]("PageXXList")
     .render_P(p => {
       val style = bss.listGroup
-      def renderItem(item: InvoiceItem) = {
+      def renderItem(item: PageXXItem) = {
         // convert priority into Bootstrap style
         val itemStyle = item.priority match {
-          case InvoiceLow => style.itemOpt(CommonStyle.info)
-          case InvoiceNormal => style.item
-          case InvoiceHigh => style.itemOpt(CommonStyle.danger)
+          case PageXXLow => style.itemOpt(CommonStyle.info)
+          case PageXXNormal => style.item
+          case PageXXHigh => style.itemOpt(CommonStyle.danger)
         }
         <.li(itemStyle,
           <.input.checkbox(^.checked := item.completed, ^.onChange --> p.stateChange(item.copy(completed = !item.completed))),
@@ -40,6 +40,6 @@ object InvoiceList {
     })
     .build
 
-  def apply(items: Seq[InvoiceItem], stateChange: InvoiceItem => Callback, editItem: InvoiceItem => Callback, deleteItem: InvoiceItem => Callback) =
-    InvoiceList(InvoiceListProps(items, stateChange, editItem, deleteItem))
+  def apply(items: Seq[PageXXItem], stateChange: PageXXItem => Callback, editItem: PageXXItem => Callback, deleteItem: PageXXItem => Callback) =
+    PageXXList(PageXXListProps(items, stateChange, editItem, deleteItem))
 }

@@ -30,15 +30,15 @@ object MainMenu {
     )
   }
 
-  // build the Invoice menu item, showing the number of open invoices
-  private def buildInvoiceMenu(props: Props): ReactElement = {
+  // build the PageXX menu item, showing the number of open pageXXs
+  private def buildPageXXMenu(props: Props): ReactElement = {
     val proxy = props.proxy()
     println(proxy)
-    val invoiceCount = proxy._2.getOrElse(0)
+    val pageXXCount = proxy._2.getOrElse(0)
     js.debugger()
     <.span(
-      <.span("Invoice "),
-      invoiceCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, invoiceCount)
+      <.span("PageXX "),
+      pageXXCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, pageXXCount)
     )
   }
 
@@ -51,7 +51,7 @@ object MainMenu {
   private val menuItems = Seq(
     MenuItem(1, _ => "Dashboard", Icon.dashboard, DashboardLoc),
     MenuItem(2, buildTodoMenu, Icon.check, TodoLoc),
-    MenuItem(3, buildInvoiceMenu, Icon.check, InvoiceLoc)
+    MenuItem(3, buildPageXXMenu, Icon.check, PageXXLoc)
   )
 
   private class Backend($: BackendScope[Props, Unit]) {

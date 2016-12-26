@@ -13,64 +13,64 @@ import spatutorial.shared._
 
 import scalacss.ScalaCssReact._
 
-object Invoice {
+object PageXX {
 
-  case class Props(proxy: ModelProxy[Pot[Invoices]])
+  case class Props(proxy: ModelProxy[Pot[PageXXs]])
 
-  case class State(selectedItem: Option[InvoiceItem] = None, showInvoiceForm: Boolean = false)
+  case class State(selectedItem: Option[PageXXItem] = None, showPageXXForm: Boolean = false)
 
   class Backend($: BackendScope[Props, State]) {
     def mounted(props: Props) =
-      // dispatch a message to refresh the invoices, which will cause InvoiceStore to fetch invoices from the server
-      Callback.when(props.proxy().isEmpty)(props.proxy.dispatchCB(RefreshInvoices))
+      // dispatch a message to refresh the pageXXs, which will cause PageXXStore to fetch pageXXs from the server
+      Callback.when(props.proxy().isEmpty)(props.proxy.dispatchCB(RefreshPageXXs))
 
-    def editInvoice(item: Option[InvoiceItem]) =
+    def editPageXX(item: Option[PageXXItem]) =
       // activate the edit dialog
-      $.modState(s => s.copy(selectedItem = item, showInvoiceForm = true))
+      $.modState(s => s.copy(selectedItem = item, showPageXXForm = true))
 
-    def invoiceEdited(item: InvoiceItem, cancelled: Boolean): CallbackTo[Unit] = {
+    def pageXXEdited(item: PageXXItem, cancelled: Boolean): CallbackTo[Unit] = {
       val cb = if (cancelled) {
         // nothing to do here
-        Callback.log("Invoice editing cancelled")
+        Callback.log("PageXX editing cancelled")
       } else {
-        Callback.log(s"Invoice edited: $item") >>
-          $.props >>= (_.proxy.dispatchCB(UpdateInvoice(item)))
+        Callback.log(s"PageXX edited: $item") >>
+          $.props >>= (_.proxy.dispatchCB(UpdatePageXX(item)))
       }
       // hide the edit dialog, chain callbacks
-      cb >> $.modState(s => s.copy(showInvoiceForm = false))
+      cb >> $.modState(s => s.copy(showPageXXForm = false))
     }
 
     def render(p: Props, s: State) =
       Panel(Panel.Props("What needs to be done"), <.div(
         p.proxy().renderFailed(ex => "Error loading"),
         p.proxy().renderPending(_ > 5000, _ => "Loading..."),
-        p.proxy().render(invoices => InvoiceList(invoices.items, item => p.proxy.dispatchCB(UpdateInvoice(item)),
-          item => editInvoice(Some(item)), item => p.proxy.dispatchCB(DeleteInvoice(item)))),
-        Button(Button.Props(editInvoice(None)), Icon.plusSquare, " New")),
+        p.proxy().render(pageXXs => PageXXList(pageXXs.items, item => p.proxy.dispatchCB(UpdatePageXX(item)),
+          item => editPageXX(Some(item)), item => p.proxy.dispatchCB(DeletePageXX(item)))),
+        Button(Button.Props(editPageXX(None)), Icon.plusSquare, " New")),
         // if the dialog is open, add it to the panel
-        if (s.showInvoiceForm) InvoiceForm(InvoiceForm.Props(s.selectedItem, invoiceEdited))
+        if (s.showPageXXForm) PageXXForm(PageXXForm.Props(s.selectedItem, pageXXEdited))
         else // otherwise add an empty placeholder
           Seq.empty[ReactElement])
   }
 
   // create the React component for To Do management
-  val component = ReactComponentB[Props]("INVOICE")
-    .initialState(State()) // initial state from InvoiceStore
+  val component = ReactComponentB[Props]("PageXX")
+    .initialState(State()) // initial state from PageXXStore
     .renderBackend[Backend]
     .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(proxy: ModelProxy[Pot[Invoices]]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[Pot[PageXXs]]) = component(Props(proxy))
 }
 
-object InvoiceForm {
+object PageXXForm {
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props(item: Option[InvoiceItem], submitHandler: (InvoiceItem, Boolean) => Callback)
+  case class Props(item: Option[PageXXItem], submitHandler: (PageXXItem, Boolean) => Callback)
 
-  case class State(item: InvoiceItem, cancelled: Boolean = true)
+  case class State(item: PageXXItem, cancelled: Boolean = true)
 
   class Backend(t: BackendScope[Props, State]) {
     def submitForm(): Callback = {
@@ -84,23 +84,23 @@ object InvoiceForm {
 
     def updateDescription(e: ReactEventI) = {
       val text = e.target.value
-      // update InvoiceItem content
+      // update PageXXItem content
       t.modState(s => s.copy(item = s.item.copy(content = text)))
     }
 
     def updatePriority(e: ReactEventI) = {
-      // update InvoiceItem priority
+      // update PageXXItem priority
       val newPri = e.currentTarget.value match {
-        case p if p == InvoiceHigh.toString => InvoiceHigh
-        case p if p == InvoiceNormal.toString => InvoiceNormal
-        case p if p == InvoiceLow.toString => InvoiceLow
+        case p if p == PageXXHigh.toString => PageXXHigh
+        case p if p == PageXXNormal.toString => PageXXNormal
+        case p if p == PageXXLow.toString => PageXXLow
       }
       t.modState(s => s.copy(item = s.item.copy(priority = newPri)))
     }
 
     def render(p: Props, s: State) = {
-      log.debug(s"User is ${if (s.item.id == "") "adding" else "editing"} a invoice or two")
-      val headerText = if (s.item.id == "") "Add new invoice" else "Edit invoice"
+      log.debug(s"User is ${if (s.item.id == "") "adding" else "editing"} a pageXX or two")
+      val headerText = if (s.item.id == "") "Add new pageXX" else "Edit pageXX"
       Modal(Modal.Props(
         // header contains a cancel button (X)
         header = hide => <.span(<.button(^.tpe := "button", bss.close, ^.onClick --> hide, Icon.close), <.h4(headerText)),
@@ -116,17 +116,17 @@ object InvoiceForm {
           <.label(^.`for` := "priority", "Priority"),
           // using defaultValue = "Normal" instead of option/selected due to React
           <.select(bss.formControl, ^.id := "priority", ^.value := s.item.priority.toString, ^.onChange ==> updatePriority,
-            <.option(^.value := InvoiceHigh.toString, "High"),
-            <.option(^.value := InvoiceNormal.toString, "Normal"),
-            <.option(^.value := InvoiceLow.toString, "Low")
+            <.option(^.value := PageXXHigh.toString, "High"),
+            <.option(^.value := PageXXNormal.toString, "Normal"),
+            <.option(^.value := PageXXLow.toString, "Low")
           )
         )
       )
     }
   }
 
-  val component = ReactComponentB[Props]("InvoiceForm")
-    .initialState_P(p => State(p.item.getOrElse(InvoiceItem("", 0, "", InvoiceNormal, completed = false))))
+  val component = ReactComponentB[Props]("PageXXForm")
+    .initialState_P(p => State(p.item.getOrElse(PageXXItem("", 0, "", PageXXNormal, completed = false))))
     .renderBackend[Backend]
     .build
 

@@ -1,7 +1,7 @@
 package spatutorial
 
 package object shared {
-  type InvoiceNumber = Option[String]
+  type PageXXNumber = Option[String]
   type ReferenceNumber = Option[String]
   type Customer = Option[String]
   type Amount = BigDecimal

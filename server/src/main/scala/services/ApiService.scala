@@ -11,11 +11,11 @@ class ApiService extends Api {
     TodoItem("3", 0x61626364, "Walk away slowly from an explosion without looking back.", TodoHigh, completed = false),
     TodoItem("4", 0x61626364, "Sneeze in front of the pope. Get blessed.", TodoNormal, completed = true)
   )
-  var invoices = Seq(
-    InvoiceItem("41424344-4546-4748-494a-4b4c4d4e4f50", 0x61626364, "Wear shirt that says “Life”. Hand out lemons on street corner.", InvoiceLow, completed = false),
-    InvoiceItem("2", 0x61626364, "Make vanilla pudding. Put in mayo jar. Eat in public.", InvoiceNormal, completed = false),
-    InvoiceItem("3", 0x61626364, "Walk away slowly from an explosion without looking back.", InvoiceHigh, completed = false),
-    InvoiceItem("4", 0x61626364, "Sneeze in front of the pope. Get blessed.", InvoiceNormal, completed = true)
+  var pageXXs = Seq(
+    PageXXItem("41424344-4546-4748-494a-4b4c4d4e4f50", 0x61626364, "Wear shirt that says “Life”. Hand out lemons on street corner.", PageXXLow, completed = false),
+    PageXXItem("2", 0x61626364, "Make vanilla pudding. Put in mayo jar. Eat in public.", PageXXNormal, completed = false),
+    PageXXItem("3", 0x61626364, "Walk away slowly from an explosion without looking back.", PageXXHigh, completed = false),
+    PageXXItem("4", 0x61626364, "Sneeze in front of the pope. Get blessed.", PageXXNormal, completed = true)
   )
 
   override def welcomeMsg(name: String): String =
@@ -56,38 +56,38 @@ class ApiService extends Api {
     todos
   }
   
-  override def getAllInvoices(): Seq[InvoiceItem] = {
-    // provide some fake Invoices
+  override def getAllPageXXs(): Seq[PageXXItem] = {
+    // provide some fake PageXXs
     Thread.sleep(300)
-    println(s"Sending ${invoices.size} Invoice items")
-    invoices
+    println(s"Sending ${pageXXs.size} PageXX items")
+    pageXXs
   }
 
-  // update a Invoice
-  override def updateInvoice(item: InvoiceItem): Seq[InvoiceItem] = {
-    // INVOICE, update database etc :)
-    if(invoices.exists(_.id == item.id)) {
-      invoices = invoices.collect {
+  // update a PageXX
+  override def updatePageXX(item: PageXXItem): Seq[PageXXItem] = {
+    // PageXX, update database etc :)
+    if(pageXXs.exists(_.id == item.id)) {
+      pageXXs = pageXXs.collect {
         case i if i.id == item.id => item
         case i => i
       }
-      println(s"Invoice item was updated: $item")
+      println(s"PageXX item was updated: $item")
     } else {
       // add a new item
       val newItem = item.copy(id = UUID.randomUUID().toString)
-      invoices :+= newItem
-      println(s"Invoice item was added: $newItem")
+      pageXXs :+= newItem
+      println(s"PageXX item was added: $newItem")
     }
     Thread.sleep(300)
-    invoices
+    pageXXs
   }
 
-  // delete a Invoice
-  override def deleteInvoice(itemId: String): Seq[InvoiceItem] = {
+  // delete a PageXX
+  override def deletePageXX(itemId: String): Seq[PageXXItem] = {
     println(s"Deleting item with id = $itemId")
     Thread.sleep(300)
-    invoices = invoices.filterNot(_.id == itemId)
-    invoices
+    pageXXs = pageXXs.filterNot(_.id == itemId)
+    pageXXs
   }
   
   

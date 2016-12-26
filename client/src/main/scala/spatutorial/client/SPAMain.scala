@@ -24,8 +24,7 @@ object SPAMain extends js.JSApp {
   case object DashboardLoc extends Loc
 
   case object TodoLoc extends Loc
-  case object FuncLoc extends Loc
-  case object InvoiceLoc extends Loc
+  case object PageXXLoc extends Loc
 
   // configure the router
   val routerConfig = RouterConfigDsl[Loc].buildConfig { dsl =>
@@ -33,17 +32,17 @@ object SPAMain extends js.JSApp {
 
     val todoWrapper = SPACircuit.connect(_.todos)
 
-    val invoiceWrapper = SPACircuit.connect(rootModel => rootModel.invoices)
+    val pageXXWrapper = SPACircuit.connect(rootModel => rootModel.pageXXs)
 
     // wrap/connect components to the circuit
     (staticRoute(root, DashboardLoc) ~> renderR(ctl => SPACircuit.wrap(_.motd)(proxy => Dashboard(ctl, proxy)))
       | staticRoute("#todo", TodoLoc) ~> renderR(ctl => todoWrapper(Todo(_)))
-      | staticRoute("#invoice", InvoiceLoc) ~> renderR(ctl => invoiceWrapper(Invoice(_)))
+      | staticRoute("#pageXX", PageXXLoc) ~> renderR(ctl => pageXXWrapper(PageXX(_)))
       ).notFound(redirectToPage(DashboardLoc)(Redirect.Replace))
   }.renderWith(layout)
 
-  val todoCountWrapper = SPACircuit.connect(model => (model.todos.map(_.items.count(!_.completed)).toOption, model.invoices.map(_.items.count(!_.completed)).toOption))
-  val invoiceCountWrapper = SPACircuit.connect(_.invoices.map(_.items.count(!_.completed)).toOption)
+  val todoCountWrapper = SPACircuit.connect(model => (model.todos.map(_.items.count(!_.completed)).toOption, model.pageXXs.map(_.items.count(!_.completed)).toOption))
+
   // base layout for all pages
   def layout(c: RouterCtl[Loc], r: Resolution[Loc]) = {
     <.div(

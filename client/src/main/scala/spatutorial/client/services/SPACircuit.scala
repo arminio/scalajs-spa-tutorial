@@ -5,7 +5,7 @@ import diode._
 import diode.data._
 import diode.react.ReactConnector
 import diode.util._
-import spatutorial.shared.{Api, InvoiceItem, TodoItem}
+import spatutorial.shared.{Api, PageXXItem, TodoItem}
 import boopickle.Default._
 import org.scalajs.dom
 
@@ -21,14 +21,14 @@ case class UpdateTodo(item: TodoItem) extends Action
 
 case class DeleteTodo(item: TodoItem) extends Action
 
-// invoice actions
-case object RefreshInvoices extends Action
+// pageXX actions
+case object RefreshPageXXs extends Action
 
-case class UpdateAllInvoices(invoices: Seq[InvoiceItem]) extends Action
+case class UpdateAllPageXXs(pageXXs: Seq[PageXXItem]) extends Action
 
-case class UpdateInvoice(item: InvoiceItem) extends Action
+case class UpdatePageXX(item: PageXXItem) extends Action
 
-case class DeleteInvoice(item: InvoiceItem) extends Action
+case class DeletePageXX(item: PageXXItem) extends Action
 
 
 
@@ -37,7 +37,7 @@ case class UpdateMotd(potResult: Pot[String] = Empty) extends PotAction[String, 
 }
 
 // The base model of our application
-case class RootModel(todos: Pot[Todos], motd: Pot[String], invoices: Pot[Invoices])
+case class RootModel(todos: Pot[Todos], motd: Pot[String], pageXXs: Pot[PageXXs])
 
 case class Todos(items: Seq[TodoItem]) {
   def updated(newItem: TodoItem) = {
@@ -53,18 +53,18 @@ case class Todos(items: Seq[TodoItem]) {
   def remove(item: TodoItem) = Todos(items.filterNot(_ == item))
 }
 
-case class Invoices(items: Seq[InvoiceItem]) {
-  def updated(newItem: InvoiceItem) = {
+case class PageXXs(items: Seq[PageXXItem]) {
+  def updated(newItem: PageXXItem) = {
     items.indexWhere(_.id == newItem.id) match {
       case -1 =>
         // add new
-        Invoices(items :+ newItem)
+        PageXXs(items :+ newItem)
       case idx =>
         // replace old
-        Invoices(items.updated(idx, newItem))
+        PageXXs(items.updated(idx, newItem))
     }
   }
-  def remove(item: InvoiceItem) = Invoices(items.filterNot(_ == item))
+  def remove(item: PageXXItem) = PageXXs(items.filterNot(_ == item))
 }
 
 /**
@@ -88,31 +88,31 @@ class TodoHandler[M](modelRW: ModelRW[M, Pot[Todos]]) extends ActionHandler(mode
   }
 }
 /**
-  * Handles actions related to invoices
+  * Handles actions related to pageXXs
   *
   * @param modelRW Reader/Writer to access the model
   */
-class InvoiceHandler[M](modelRW: ModelRW[M, Pot[Invoices]]) extends ActionHandler(modelRW) {
+class PageXXHandler[M](modelRW: ModelRW[M, Pot[PageXXs]]) extends ActionHandler(modelRW) {
   override def handle: PartialFunction[Any, ActionResult[M]] = {
-    case RefreshInvoices =>
+    case RefreshPageXXs =>
 //      dom.window.debugger();
-      println("RefreshInvoices")
-      effectOnly(Effect(AjaxClient[Api].getAllInvoices().call().map(UpdateAllInvoices)))
-    case UpdateAllInvoices(invoices) =>
-      // got new invoices, update model
-      println(s"UpdateAllInvoices $invoices")
+      println("RefreshPageXXs")
+      effectOnly(Effect(AjaxClient[Api].getAllPageXXs().call().map(UpdateAllPageXXs)))
+    case UpdateAllPageXXs(pageXXs) =>
+      // got new pageXXs, update model
+      println(s"UpdateAllPageXXs $pageXXs")
        js.debugger()
-      updated(Ready(Invoices(invoices)))
-    case UpdateInvoice(item) =>
+      updated(Ready(PageXXs(pageXXs)))
+    case UpdatePageXX(item) =>
       // make a local update and inform server
-      println(s"UpdateInvoice $item")
+      println(s"UpdatePageXX $item")
 
-      updated(value.map(_.updated(item)), Effect(AjaxClient[Api].updateInvoice(item).call().map(UpdateAllInvoices)))
-    case DeleteInvoice(item) =>
+      updated(value.map(_.updated(item)), Effect(AjaxClient[Api].updatePageXX(item).call().map(UpdateAllPageXXs)))
+    case DeletePageXX(item) =>
       // make a local update and inform server
-      println(s"DeleteInvoice $item")
+      println(s"DeletePageXX $item")
 
-      updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteInvoice(item.id).call().map(UpdateAllInvoices)))
+      updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deletePageXX(item.id).call().map(UpdateAllPageXXs)))
   }
 }
 
@@ -138,7 +138,7 @@ object SPACircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
   // combine all handlers into one
   override protected val actionHandler = composeHandlers(
     new TodoHandler(zoomRW(_.todos)((m, v) => m.copy(todos = v))),
-    new InvoiceHandler(zoomRW(_.invoices)((m, v) => m.copy(invoices = v))),
+    new PageXXHandler(zoomRW(_.pageXXs)((m, v) => m.copy(pageXXs = v))),
     new MotdHandler(zoomRW(_.motd)((m, v) => m.copy(motd = v)))
   )
 }

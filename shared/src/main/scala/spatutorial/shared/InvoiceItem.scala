@@ -4,18 +4,18 @@ import java.time.LocalDateTime
 
 import boopickle.Default._
 
-sealed trait InvoicePriority
+sealed trait PageXXPriority
 
-case object InvoiceLow extends InvoicePriority
+case object PageXXLow extends PageXXPriority
 
-case object InvoiceNormal extends InvoicePriority
+case object PageXXNormal extends PageXXPriority
 
-case object InvoiceHigh extends InvoicePriority
+case object PageXXHigh extends PageXXPriority
 
-case class InvoiceItem(id: String, timeStamp: Int, content: String, priority: InvoicePriority, completed: Boolean)
+case class PageXXItem(id: String, timeStamp: Int, content: String, priority: PageXXPriority, completed: Boolean)
 
 
-case class InvoiceItemNew(number: InvoiceNumber,
+case class PageXXItemNew(number: PageXXNumber,
                           ref: ReferenceNumber,
                           to: Customer = None,
                           date: LocalDateTime,
@@ -25,6 +25,6 @@ case class InvoiceItemNew(number: InvoiceNumber,
                           status: Status,
                           sent: Boolean = false)
 
-object InvoicePriority {
-  implicit val invoicePriorityPickler: Pickler[InvoicePriority] = generatePickler[InvoicePriority]
+object PageXXPriority {
+  implicit val pageXXPriorityPickler: Pickler[PageXXPriority] = generatePickler[PageXXPriority]
 }
