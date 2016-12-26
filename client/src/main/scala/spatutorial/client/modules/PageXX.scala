@@ -41,7 +41,7 @@ object PageXX {
     }
 
     def render(p: Props, s: State) =
-      Panel(Panel.Props("What needs to be done"), <.div(
+      Panel(Panel.Props("##Page Title##"), <.div(
         p.proxy().renderFailed(ex => "Error loading"),
         p.proxy().renderPending(_ > 5000, _ => "Loading..."),
         p.proxy().render(pageXXs => PageXXList(pageXXs.items, item => p.proxy.dispatchCB(UpdatePageXX(item)),
