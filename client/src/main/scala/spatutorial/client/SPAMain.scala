@@ -1,5 +1,6 @@
 package spatutorial.client
 
+import diode.react.{ModelProxy, ReactConnectProxy}
 import japgolly.scalajs.react.ReactDOM
 import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -41,7 +42,8 @@ object SPAMain extends js.JSApp {
       ).notFound(redirectToPage(DashboardLoc)(Redirect.Replace))
   }.renderWith(layout)
 
-  val todoCountWrapper = SPACircuit.connect(_.todos.map(_.items.count(!_.completed)).toOption)
+  val todoCountWrapper = SPACircuit.connect(model => (model.todos.map(_.items.count(!_.completed)).toOption, model.invoices.map(_.items.count(!_.completed)).toOption))
+  val invoiceCountWrapper = SPACircuit.connect(_.invoices.map(_.items.count(!_.completed)).toOption)
   // base layout for all pages
   def layout(c: RouterCtl[Loc], r: Resolution[Loc]) = {
     <.div(
@@ -51,7 +53,8 @@ object SPAMain extends js.JSApp {
           <.div(^.className := "navbar-header", <.span(^.className := "navbar-brand", "SPA Tutorial")),
           <.div(^.className := "collapse navbar-collapse",
             // connect menu to model, because it needs to update when the number of open todos changes
-            todoCountWrapper(proxy => MainMenu(c, r.page, proxy))
+            todoCountWrapper((proxy: ModelProxy[(Option[Int], Option[Int])]) => MainMenu(c, r.page, proxy))
+
           )
         )
       ),

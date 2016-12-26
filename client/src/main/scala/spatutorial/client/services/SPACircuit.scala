@@ -7,8 +7,10 @@ import diode.react.ReactConnector
 import diode.util._
 import spatutorial.shared.{Api, InvoiceItem, TodoItem}
 import boopickle.Default._
+import org.scalajs.dom
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js
 
 // Actions
 case object RefreshTodos extends Action
@@ -93,15 +95,23 @@ class TodoHandler[M](modelRW: ModelRW[M, Pot[Todos]]) extends ActionHandler(mode
 class InvoiceHandler[M](modelRW: ModelRW[M, Pot[Invoices]]) extends ActionHandler(modelRW) {
   override def handle: PartialFunction[Any, ActionResult[M]] = {
     case RefreshInvoices =>
+//      dom.window.debugger();
+      println("RefreshInvoices")
       effectOnly(Effect(AjaxClient[Api].getAllInvoices().call().map(UpdateAllInvoices)))
     case UpdateAllInvoices(invoices) =>
       // got new invoices, update model
+      println(s"UpdateAllInvoices $invoices")
+       js.debugger()
       updated(Ready(Invoices(invoices)))
     case UpdateInvoice(item) =>
       // make a local update and inform server
+      println(s"UpdateInvoice $item")
+
       updated(value.map(_.updated(item)), Effect(AjaxClient[Api].updateInvoice(item).call().map(UpdateAllInvoices)))
     case DeleteInvoice(item) =>
       // make a local update and inform server
+      println(s"DeleteInvoice $item")
+
       updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteInvoice(item.id).call().map(UpdateAllInvoices)))
   }
 }

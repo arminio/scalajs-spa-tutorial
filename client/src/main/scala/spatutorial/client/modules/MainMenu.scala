@@ -10,19 +10,20 @@ import spatutorial.client.components.Icon._
 import spatutorial.client.components._
 import spatutorial.client.services._
 
+import scala.scalajs.js
 import scalacss.ScalaCssReact._
 
 object MainMenu {
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props(router: RouterCtl[Loc], currentLoc: Loc, proxy: ModelProxy[Option[Int]])
+  case class Props(router: RouterCtl[Loc], currentLoc: Loc, proxy: ModelProxy[(Option[Int], Option[Int])])
 
   private case class MenuItem(idx: Int, label: (Props) => ReactNode, icon: Icon, location: Loc)
 
   // build the Todo menu item, showing the number of open todos
   private def buildTodoMenu(props: Props): ReactElement = {
-    val todoCount = props.proxy().getOrElse(0)
+    val todoCount = props.proxy()._1.getOrElse(0)
     <.span(
       <.span("Todo "),
       todoCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount)
@@ -31,7 +32,10 @@ object MainMenu {
 
   // build the Invoice menu item, showing the number of open invoices
   private def buildInvoiceMenu(props: Props): ReactElement = {
-    val invoiceCount = props.proxy().getOrElse(0)
+    val proxy = props.proxy()
+    println(proxy)
+    val invoiceCount = proxy._2.getOrElse(0)
+    js.debugger()
     <.span(
       <.span("Invoice "),
       invoiceCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, invoiceCount)
@@ -53,7 +57,7 @@ object MainMenu {
   private class Backend($: BackendScope[Props, Unit]) {
     def mounted(props: Props) =
       // dispatch a message to refresh the todos
-      Callback.when(props.proxy.value.isEmpty)(props.proxy.dispatchCB(RefreshTodos))
+      Callback.when(props.proxy.value._1.isEmpty)(props.proxy.dispatchCB(RefreshTodos))
 
     def render(props: Props) = {
       <.ul(bss.navbar)(
@@ -72,6 +76,6 @@ object MainMenu {
     .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
 
-  def apply(ctl: RouterCtl[Loc], currentLoc: Loc, proxy: ModelProxy[Option[Int]]): ReactElement =
+  def apply(ctl: RouterCtl[Loc], currentLoc: Loc, proxy: ModelProxy[(Option[Int], Option[Int])]): ReactElement =
     component(Props(ctl, currentLoc, proxy))
 }
