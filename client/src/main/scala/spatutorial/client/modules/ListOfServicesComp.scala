@@ -1,21 +1,16 @@
 package spatutorial.client.modules
 
+import diode.data.Pot
 import diode.react.ReactPot._
 import diode.react._
-import diode.data.Pot
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^.{<, _}
 import spatutorial.client.SPAMain.{FunctionsLoc, Loc, ServiceLoc}
 import spatutorial.client.components.Bootstrap._
-import spatutorial.client.components._
-import spatutorial.client.logger._
 import spatutorial.client.services._
-import spatutorial.shared._
 
-import scalacss.ScalaCssReact._
-
-object ServicesComp {
+object ListOfServicesComp {
 
   case class Props(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]])
 
@@ -76,6 +71,7 @@ object ServicesComp {
   /** Returns a function compatible with router location system while using our own props */
   def apply(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]]) = component(Props(router, proxy))
 }
+
 
 //object TodoForm {
 //  // shorthand for styles

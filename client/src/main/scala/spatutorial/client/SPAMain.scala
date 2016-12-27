@@ -47,13 +47,14 @@ object SPAMain extends js.JSApp {
     val idPattern = "[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
     (
       staticRoute("#error", ErrorLoc) ~>  render( <.h1("Errored!!!!") ) |
-      staticRoute("#services", ServicesLoc) ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ServicesComp(ctl, props))) |
-      staticRoute("#functions", FunctionsLoc) ~> renderR(ctl => functionsWrapper((props: ModelProxy[Seq[Function]]) => FunctionsComp(ctl, props))) |
-      dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc]) ~> dynRender(x => <.h1(s"Service ${x.asInstanceOf[ServiceLoc].id}!!!!")) |
+      staticRoute("#services", ServicesLoc) ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props))) |
+      staticRoute("#functions", FunctionsLoc) ~> renderR(ctl => functionsWrapper((props: ModelProxy[Seq[Function]]) => FunctionsComp(ctl, props))) |   // <--!@ use servicesWrapper
+      dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc]) ~> dynRenderR((loc, ctl)=> servicesWrapper((props: ModelProxy[Pot[Services]]) => ServiceComp(ctl, props))) |
+//      dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc]) ~> dynRenderR((loc, ctl) => servicesWrapper((props: ModelProxy[Pot[Services]]) => ???)) |
       dynamicRouteCT("#function" / string(idPattern).caseClass[FunctionLoc]) ~> dynRender(x => <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!"))
 //        |
 //      dynamicRoute(r) ~> dynRender(x => <.h1(s"Chicken ${x}!!!!") )
-      ).notFound(redirectToPage(ErrorLoc)(Redirect.Replace))
+      ).notFound(redirectToPage(ErrorLoc)(Redirect.Push))
 
   }.renderWith(layout)
 
