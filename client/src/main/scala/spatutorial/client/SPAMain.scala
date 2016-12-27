@@ -11,7 +11,7 @@ import spatutorial.client.components.GlobalStyles
 import spatutorial.client.logger._
 import spatutorial.client.modules._
 import spatutorial.client.services.{SPACircuit, Services}
-import spatutorial.shared.{Function, Service}
+import spatutorial.shared.{Function, Identifier, Service}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
@@ -44,12 +44,14 @@ object SPAMain extends js.JSApp {
     val functionsWrapper = SPACircuit.connect(_.services.get.services.flatMap(service => service.functions))
 
     // wrap/connect components to the circuit
+    val idPattern = "[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
     (
       staticRoute("#error", ErrorLoc) ~>  render( <.h1("Errored!!!!") ) |
       staticRoute("#services", ServicesLoc) ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ServicesComp(ctl, props))) |
       staticRoute("#functions", FunctionsLoc) ~> renderR(ctl => functionsWrapper((props: ModelProxy[Seq[Function]]) => FunctionsComp(ctl, props))) |
-      dynamicRouteCT("#service" / string("[a-zA-Z0-9]+").caseClass[ServiceLoc]) ~> dynRender(x => <.h1(s"Service ${x.asInstanceOf[ServiceLoc].id}!!!!")) |
-      dynamicRouteCT("#function" / string("[a-zA-Z0-9]+").caseClass[FunctionLoc]) ~> dynRender(x => <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!"))
+//      dynamicRouteCT("#service" / string("[a-zA-Z0-9]+").caseClass[ServiceLoc]) ~> dynRender(x => <.h1(s"Service ${x.asInstanceOf[ServiceLoc].id}!!!!")) |
+      dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc]) ~> dynRender(x => <.h1(s"Service!!!!")) |
+      dynamicRouteCT("#function" / string(idPattern).caseClass[FunctionLoc]) ~> dynRender(x => <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!"))
 //        |
 //      dynamicRoute(r) ~> dynRender(x => <.h1(s"Chicken ${x}!!!!") )
       ).notFound(redirectToPage(ErrorLoc)(Redirect.Replace))

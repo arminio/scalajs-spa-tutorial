@@ -46,22 +46,23 @@ object ServicesComp {
       Panel(Panel.Props("Services"), <.div(
         p.proxy().renderFailed(ex => "Error loading"),
         p.proxy().renderPending(_ > 5000, _ => "Loading..."),
-        p.proxy().render { (services: Services) => <.div(
-          services.services.map(s => <.div(s"${s.id} BlaBla")),
+        p.proxy().render { (services: Services) =>
+          <.div(
+            services.services.map(s => <.div(s"${s.id} BlaBla")),
 
-          <.ul()(
-            // build a list of menu items
-            for ((service, idx) <- services.services.zipWithIndex) yield {
-              <.li(^.key := s"$idx",
-                p.router.link(ServiceLoc(service.id))(service.toString)
-              )
-            }
+            <.ul()(
+              // build a list of menu items
+              for ((service, idx) <- services.services.zipWithIndex) yield {
+                <.li(^.key := s"$idx",
+                p.router.link(ServiceLoc(service.id.str))(service.toString)
+                )
+              }
 
 
-          ),
+            ),
             <.div(p.router.link(FunctionsLoc)("Functions")
-        )
-        )
+            )
+          )
         }))
   }
 

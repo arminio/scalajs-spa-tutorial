@@ -46,7 +46,8 @@ object Settings {
    */
   val sharedDependencies = Def.setting(Seq(
     "com.lihaoyi" %%% "autowire" % versions.autowire,
-    "me.chrons" %%% "boopickle" % versions.booPickle
+    "me.chrons" %%% "boopickle" % versions.booPickle,
+    "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   ))
 
   /** Dependencies only used by the JVM project */

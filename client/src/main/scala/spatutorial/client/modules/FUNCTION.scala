@@ -49,7 +49,7 @@ object FunctionsComp {
           <.ul()(
             for ((function, idx) <- p.proxy.value.zipWithIndex) yield {
               <.li(^.key := s"$idx",
-                p.router.link(FunctionLoc(function.id))(function.toString)
+                p.router.link(FunctionLoc(function.id.str))(function.toString)
               )
             }
           )

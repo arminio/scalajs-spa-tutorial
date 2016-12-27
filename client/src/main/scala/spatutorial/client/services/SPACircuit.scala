@@ -76,8 +76,16 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
     case LoadServices =>
       println("load services")
       val services = Seq(
-        Service(id = "id1", artifactPath = "/tmp/xxx", functions = Seq(Function("fid1","function 1", "handler 1", Nil))),
-        Service(id = "id2", artifactPath = "/tmp/xxx", functions = Seq(Function("fid2","function 2", "handler 2", Nil)))
+        Service(id = Identifier("user1", "dev",  "SERVICE"),
+          serviceName = "service 1",
+          provider = Provider("aws", "java8"),
+          `package` = "target/scala-2.11/hello.jar",
+          functions = Seq(
+            Function(Identifier("user1", "dev",  "FUNCTION"),"function 1", "handler 1", Nil)
+          )
+        )
+//        ,
+//        Service(id = "id2", artifactPath = "/tmp/xxx", functions = Seq(Function("fid2","function 2", "handler 2", Nil)))
       )
       effectOnly(Effect(Future.successful(services).map(UpdateAllServices)))
 
