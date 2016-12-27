@@ -3,17 +3,12 @@ package spatutorial.client.modules.pages
 import diode.data.Pot
 import diode.react.ReactPot._
 import diode.react._
-import japgolly.scalajs.react.CallbackTo.MapGuard
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^.{<, _}
-import org.scalajs.dom.html.Span
-import spatutorial.client.SPAMain.{FunctionsLoc, Loc, ServiceLoc, ServicesLoc}
+import spatutorial.client.SPAMain.{Loc, ServicesLoc}
 import spatutorial.client.components.Bootstrap._
 import spatutorial.client.components.GlobalStyles
-import spatutorial.client.components.TodoList.TodoListProps
-import spatutorial.client.modules.pages.ServiceDetailsComp.Props
 import spatutorial.client.services._
 import spatutorial.shared._
 
@@ -22,9 +17,6 @@ object ServiceComp {
 
   // create the React component for To Do management
   val component = ReactComponentB[Props]("Service")
-    //    .initialState {
-    //      State()
-    //    }
     .renderBackend[Backend]
     .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
@@ -49,43 +41,15 @@ object ServiceComp {
         proxy.renderFailed(ex => "Error loading"),
         proxy.renderPending(_ > 5000, _ => "Loading..."),
         proxy.render { services => {
-          services.services.find(s => s.id == p.serviceIdentifier).map(s => ServiceDetailsComp(s, p.router, p.proxy)) match {
-            case None =>
-              val msg = s"service with id: ${p.serviceIdentifier} (OR ${p.serviceIdentifier.str})  not found!"
-              println(msg)
-              //!@            val span: ReactTagOf[Span] = <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, "!!")
-
-              <.div(msg)
-
-            case Some(y) => y
-          }
+          services.services.find(s => s.id == p.serviceIdentifier).map(s => ServiceDetailsComp(s, p.router, p.proxy))
+            .fold(
+              //None/empty case
+              <.div(s"service with id: ${p.serviceIdentifier} (OR ${p.serviceIdentifier.str})  not found!")
+            )(serviceDetailComp => <.div(serviceDetailComp))
 
         }
 
         }
-        //        proxy.render { (services: Services) => {
-        //          //          val service = services.services.find(_.id == p.serviceIdentifier)
-        //          state.service.fold {
-        //            val msg = s"service with id: ${p.serviceIdentifier} (OR ${p.serviceIdentifier.str})  not found!"
-        //            println(msg)
-        //            //!@            val span: ReactTagOf[Span] = <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, "!!")
-        //
-        //            <.div(msg)
-        //
-        //          } { (s: Service) =>
-        //
-        //            <.div(
-        //              if (state.editing) {
-        //                edit(s)
-        //              } else {
-        //                view(s)
-        //              },
-        //              <.button(if (state.editing) "Cancel" else "Edit", ^.onClick --> $.modState(state => state.copy(editing = !state.editing)))
-        //            )
-        //          }
-        //
-        //        }
-        //        }
       ))
     }
 
@@ -110,13 +74,15 @@ object ServiceDetailsComp {
   case class State(service: Service, editing: Boolean = false)
 
   class Backend($: BackendScope[Props, State]) {
+
     def editing =
       $.modState(s => s.copy(editing = !s.editing))
 
     def render(p: Props, state: State) = {
       <.div(if (state.editing) edit(state.service) else view(state.service),
         <.button(if (state.editing) "Cancel" else "Edit", ^.onClick --> $.modState(state => state.copy(editing = !state.editing))),
-        <.button("Save", ^.onClick --> save(p, state))
+        if (state.editing) <.button("Save", ^.disabled := !state.editing,  ^.onClick --> save(p, state)) else EmptyTag,
+        <.a("Services", ^.onClick --> p.router.set(ServicesLoc))
       )
     }
 
@@ -128,22 +94,31 @@ object ServiceDetailsComp {
 
     def edit(s: Service) = <.span(<.ul()(
       <.li(^.key := s"${s.id}-serviceName", <.input.text(^.value := s.serviceName, ^.placeholder := "Service Name", ^.onChange ==> updateServiceName)),
-      <.li(^.key := s"${s.id}-package", s.`package`),
+      <.li(^.key := s"${s.id}-package", <.input.text(^.value := s.`package`, ^.placeholder := "Package filepath", ^.onChange ==> updatePackageFilepath)),
       <.li(^.key := s"${s.id}-provider", s.provider.toString)
     ))
 
     def updateServiceName(e: ReactEventI) = {
       val text = e.target.value
-      println(s"inputed: $text")
+      println(s"inputted servicename: $text")
       // update TodoItem content
       $.modState(state => state.copy(service = state.service.copy(serviceName = text)))
-
     }
+
+    def updatePackageFilepath(e: ReactEventI) = {
+      val text = e.target.value
+      println(s"inputted filepath: $text")
+      // update TodoItem content
+      $.modState(state => state.copy(service = state.service.copy(`package` = text)))
+    }
+
+
     def save(props: Props, state: State) = {
 
       println(s"saving...")
-      // update TodoItem content
-      props.proxy.dispatchCB(SaveService(state.service)) >> props.router.set(ServicesLoc)
+
+//      props.proxy.dispatchCB(SaveService(state.service)) >> props.router.set(ServicesLoc)
+      props.proxy.dispatchCB(SaveService(state.service)) >> $.modState(s => s.copy(editing = !s.editing))
 
     }
 

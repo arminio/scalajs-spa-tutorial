@@ -66,36 +66,55 @@ case class SaveService(service: Service) extends Action
 //  def remove(item: TodoItem) = Todos(items.filterNot(_ == item))
 //}
 
+
+
+
 case class Services(services: Seq[Service]) {
+  def updated(newItem: Service): Services = {
+    services.indexWhere(_.id == newItem.id) match {
+      case -1 =>
+        // add new
+        Services(services:+ newItem)
+      case idx =>
+        // replace old
+        Services(services.updated(idx, newItem))
+    }
+  }
+
+  def remove(item: Service) = Services(services.filterNot(_ == item))
+
+
 
 }
 
 
 
 class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandler(modelRW) {
+
+  val testServices = Seq(
+    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid1"),
+      serviceName = "service 1",
+      provider = Provider("aws", "java8"),
+      `package` = "target/scala-2.11/hello.jar",
+      functions = Seq(
+        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
+      )
+    )
+  )
+
+
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
     case LoadServices =>
       println("load services")
-      val services = Seq(
-        Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid1"),
-          serviceName = "service 1",
-          provider = Provider("aws", "java8"),
-          `package` = "target/scala-2.11/hello.jar",
-          functions = Seq(
-            Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
-          )
-        )
-//        ,
-//        Service(id = "id2", artifactPath = "/tmp/xxx", functions = Seq(Function("fid2","function 2", "handler 2", Nil)))
-      )
-      effectOnly(Effect(Future.successful(services).map(UpdateAllServices)))
+      effectOnly(Effect(Future.successful(testServices).map(UpdateAllServices)))
 
     case UpdateAllServices(services: Seq[Service]) =>
       println(s"UpdateAllServicesL $services")
       updated(Ready(Services(services)))
     case SaveService(service) =>
       println(s"handling save service: $service")
-      noChange
+      updated(value.map(_.updated(service)))
+
   }
 }
 

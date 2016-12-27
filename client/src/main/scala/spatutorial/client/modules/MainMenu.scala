@@ -21,24 +21,14 @@ object MainMenu {
 
   private case class MenuItem(idx: Int, label: (Props) => ReactNode, icon: Icon, location: Loc)
 
-//  // build the Todo menu item, showing the number of open todos
-//  private def buildTodoMenu(props: Props): ReactElement = {
-//    val todoCount = props.proxy()._1.getOrElse(0)
-//    <.span(
-//      <.span("Todo "),
-//      todoCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount)
-//    )
-//  }
 
-  // build the PageXX menu item, showing the number of open pageXXs
   private def buildServiceMenu(props: Props): ReactElement = {
     val proxy = props.proxy()
     println(proxy)
     val pageXXCount = proxy.getOrElse(0)
 
     <.span(
-      <.span("PageXX "),
-      pageXXCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, pageXXCount)
+      <.span("Services "), pageXXCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, pageXXCount)
     )
   }
 
