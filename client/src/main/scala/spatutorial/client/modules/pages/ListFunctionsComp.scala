@@ -1,21 +1,15 @@
-package spatutorial.client.modules
+package spatutorial.client.modules.pages
 
-import diode.react.ReactPot._
 import diode.react._
-import diode.data.Pot
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
-import spatutorial.client.SPAMain.{FunctionLoc, Loc, ServiceLoc}
+import spatutorial.client.SPAMain.{FunctionLoc, Loc}
 import spatutorial.client.components.Bootstrap._
-import spatutorial.client.components._
-import spatutorial.client.logger._
 import spatutorial.client.services._
 import spatutorial.shared._
 
-import scalacss.ScalaCssReact._
-
-object FunctionsComp {
+object ListFunctionsComp {
 
   case class Props(router: RouterCtl[Loc], proxy: ModelProxy[Seq[Function]])
 

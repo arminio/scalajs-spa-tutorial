@@ -10,6 +10,7 @@ import org.scalajs.dom
 import spatutorial.client.components.GlobalStyles
 import spatutorial.client.logger._
 import spatutorial.client.modules._
+import spatutorial.client.modules.pages.{ListFunctionsComp, ListOfServicesComp, ServiceComp}
 import spatutorial.client.services.{SPACircuit, Services}
 import spatutorial.shared.{Function, Identifier, Service}
 
@@ -46,14 +47,23 @@ object SPAMain extends js.JSApp {
     // wrap/connect components to the circuit
     val idPattern = "[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
     (
-      staticRoute("#error", ErrorLoc) ~>  render( <.h1("Errored!!!!") ) |
-      staticRoute("#services", ServicesLoc) ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props))) |
-      staticRoute("#functions", FunctionsLoc) ~> renderR(ctl => functionsWrapper((props: ModelProxy[Seq[Function]]) => FunctionsComp(ctl, props))) |   // <--!@ use servicesWrapper
-      dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc]) ~> dynRenderR((loc, ctl)=> servicesWrapper((props: ModelProxy[Pot[Services]]) => ServiceComp(ctl, props))) |
-//      dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc]) ~> dynRenderR((loc, ctl) => servicesWrapper((props: ModelProxy[Pot[Services]]) => ???)) |
-      dynamicRouteCT("#function" / string(idPattern).caseClass[FunctionLoc]) ~> dynRender(x => <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!"))
-//        |
-//      dynamicRoute(r) ~> dynRender(x => <.h1(s"Chicken ${x}!!!!") )
+      staticRoute("#error", ErrorLoc)
+        ~>  render( <.h1("Errored!!!!") )
+        |
+      staticRoute("#services", ServicesLoc)
+        ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))
+        |
+      staticRoute("#functions", FunctionsLoc)
+        ~> renderR(ctl => functionsWrapper((props: ModelProxy[Seq[Function]]) => ListFunctionsComp(ctl, props))) // <--!@ use servicesWrapper
+        |
+      dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc])
+        ~> dynRenderR { (loc, ctl) =>
+
+            servicesWrapper(props => ServiceComp(ctl, Identifier(loc.asInstanceOf[ServiceLoc].id), props))
+          }
+        |
+        dynamicRouteCT("#function" / string(idPattern).caseClass[FunctionLoc])
+        ~> dynRender(x => <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!"))
       ).notFound(redirectToPage(ErrorLoc)(Redirect.Push))
 
   }.renderWith(layout)

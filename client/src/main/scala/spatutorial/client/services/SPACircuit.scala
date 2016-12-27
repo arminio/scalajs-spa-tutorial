@@ -15,8 +15,9 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 
 // Actions
-case object LoadServices extends Action
+case object LoadServices extends Action   //!@ should Load take a Loc so it can reload on any entry?
 case class UpdateAllServices(services: Seq[Service]) extends Action
+case class SaveService(service: Service) extends Action
 
 //case object RefreshTodos extends Action
 //
@@ -76,12 +77,12 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
     case LoadServices =>
       println("load services")
       val services = Seq(
-        Service(id = Identifier("user1", "dev",  "SERVICE"),
+        Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid1"),
           serviceName = "service 1",
           provider = Provider("aws", "java8"),
           `package` = "target/scala-2.11/hello.jar",
           functions = Seq(
-            Function(Identifier("user1", "dev",  "FUNCTION"),"function 1", "handler 1", Nil)
+            Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
           )
         )
 //        ,
@@ -92,6 +93,9 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
     case UpdateAllServices(services: Seq[Service]) =>
       println(s"UpdateAllServicesL $services")
       updated(Ready(Services(services)))
+    case SaveService(service) =>
+      println(s"handling save service: $service")
+      noChange
   }
 }
 

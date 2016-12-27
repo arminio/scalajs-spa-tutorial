@@ -1,4 +1,4 @@
-package spatutorial.client.modules
+package spatutorial.client.modules.pages
 
 import diode.data.Pot
 import diode.react.ReactPot._
@@ -71,7 +71,6 @@ object ListOfServicesComp {
   /** Returns a function compatible with router location system while using our own props */
   def apply(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]]) = component(Props(router, proxy))
 }
-
 
 //object TodoForm {
 //  // shorthand for styles

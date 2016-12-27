@@ -8,7 +8,7 @@ import java.util.UUID
 case class Identifier(user: String , profile: String , kind: String , uuid: String = UUID.randomUUID().toString.replaceAll("-", "") ) {
 
   def str = {
-    s"$user%$profile%$kind%$uuid".replaceAll("%", Identifier.separator)
+    s"$user%$profile%$kind%$uuid".replaceAll("%", Identifier.separator) //!@ refactor this (list.mkstring("-"))
   }
 }
 

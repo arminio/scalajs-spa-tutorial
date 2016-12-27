@@ -60,7 +60,7 @@ object MainMenu {
       // dispatch a message to refresh the todos
       val empty = props.proxy.value.isEmpty
       println(empty)
-      js.debugger()
+//      js.debugger()
       Callback.when(empty)(props.proxy.dispatchCB(LoadServices))
     }
 
