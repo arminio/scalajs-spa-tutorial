@@ -17,25 +17,25 @@ object MainMenu {
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props(router: RouterCtl[Loc], currentLoc: Loc, proxy: ModelProxy[(Option[Int], Option[Int])])
+  case class Props(router: RouterCtl[Loc], currentLoc: Loc, proxy: ModelProxy[Option[Int]])
 
   private case class MenuItem(idx: Int, label: (Props) => ReactNode, icon: Icon, location: Loc)
 
-  // build the Todo menu item, showing the number of open todos
-  private def buildTodoMenu(props: Props): ReactElement = {
-    val todoCount = props.proxy()._1.getOrElse(0)
-    <.span(
-      <.span("Todo "),
-      todoCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount)
-    )
-  }
+//  // build the Todo menu item, showing the number of open todos
+//  private def buildTodoMenu(props: Props): ReactElement = {
+//    val todoCount = props.proxy()._1.getOrElse(0)
+//    <.span(
+//      <.span("Todo "),
+//      todoCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount)
+//    )
+//  }
 
   // build the PageXX menu item, showing the number of open pageXXs
-  private def buildPageXXMenu(props: Props): ReactElement = {
+  private def buildServiceMenu(props: Props): ReactElement = {
     val proxy = props.proxy()
     println(proxy)
-    val pageXXCount = proxy._2.getOrElse(0)
-    js.debugger()
+    val pageXXCount = proxy.getOrElse(0)
+
     <.span(
       <.span("PageXX "),
       pageXXCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, pageXXCount)
@@ -49,15 +49,20 @@ object MainMenu {
   }
 
   private val menuItems = Seq(
-    MenuItem(1, _ => "Dashboard", Icon.dashboard, DashboardLoc),
-    MenuItem(2, buildTodoMenu, Icon.check, TodoLoc),
-    MenuItem(3, buildPageXXMenu, Icon.check, PageXXLoc)
+    MenuItem(1, buildServiceMenu, Icon.dashboard, ServicesLoc)
+//    MenuItem(1, _ => "Dashboard", Icon.dashboard, DashboardLoc),
+//    MenuItem(2, buildTodoMenu, Icon.check, TodoLoc),
+//    MenuItem(3, buildPageXXMenu, Icon.check, PageXXLoc)
   )
 
   private class Backend($: BackendScope[Props, Unit]) {
-    def mounted(props: Props) =
+    def mounted(props: Props) = {
       // dispatch a message to refresh the todos
-      Callback.when(props.proxy.value._1.isEmpty)(props.proxy.dispatchCB(RefreshTodos))
+      val empty = props.proxy.value.isEmpty
+      println(empty)
+      js.debugger()
+      Callback.when(empty)(props.proxy.dispatchCB(LoadServices))
+    }
 
     def render(props: Props) = {
       <.ul(bss.navbar)(
@@ -76,6 +81,6 @@ object MainMenu {
     .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
 
-  def apply(ctl: RouterCtl[Loc], currentLoc: Loc, proxy: ModelProxy[(Option[Int], Option[Int])]): ReactElement =
+  def apply(ctl: RouterCtl[Loc], currentLoc: Loc, proxy: ModelProxy[Option[Int]]): ReactElement =
     component(Props(ctl, currentLoc, proxy))
 }

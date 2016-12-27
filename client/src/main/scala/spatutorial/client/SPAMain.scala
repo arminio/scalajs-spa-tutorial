@@ -1,14 +1,17 @@
 package spatutorial.client
 
+import diode.data.Pot
 import diode.react.{ModelProxy, ReactConnectProxy}
 import japgolly.scalajs.react.ReactDOM
+import japgolly.scalajs.react.extra.router.StaticDsl.Route
 import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import org.scalajs.dom
 import spatutorial.client.components.GlobalStyles
 import spatutorial.client.logger._
 import spatutorial.client.modules._
-import spatutorial.client.services.SPACircuit
+import spatutorial.client.services.{SPACircuit, Services}
+import spatutorial.shared.{Function, Service}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
@@ -21,27 +24,40 @@ object SPAMain extends js.JSApp {
   // Define the locations (pages) used in this application
   sealed trait Loc
 
-  case object DashboardLoc extends Loc
+  case object ServicesLoc extends Loc
+  case object FunctionsLoc extends Loc
+  case class ServiceLoc(id: String) extends Loc
+  case class FunctionLoc(id: String) extends Loc
 
-  case object TodoLoc extends Loc
-  case object PageXXLoc extends Loc
+  case object ErrorLoc extends Loc
+//  case object DashboardLoc extends Loc
+//  case object TodoLoc extends Loc
+//  case object PageXXLoc extends Loc
+
+
+//  case class ServiceId(id: String) extends Loc
 
   // configure the router
   val routerConfig = RouterConfigDsl[Loc].buildConfig { dsl =>
     import dsl._
-
-    val todoWrapper = SPACircuit.connect(_.todos)
-
-    val pageXXWrapper = SPACircuit.connect(rootModel => rootModel.pageXXs)
+    val servicesWrapper = SPACircuit.connect(_.services)
+    val functionsWrapper = SPACircuit.connect(_.services.get.services.flatMap(service => service.functions))
 
     // wrap/connect components to the circuit
-    (staticRoute(root, DashboardLoc) ~> renderR(ctl => SPACircuit.wrap(_.motd)(proxy => Dashboard(ctl, proxy)))
-      | staticRoute("#todo", TodoLoc) ~> renderR(ctl => todoWrapper(Todo(_)))
-      | staticRoute("#pageXX", PageXXLoc) ~> renderR(ctl => pageXXWrapper(PageXX(_)))
-      ).notFound(redirectToPage(DashboardLoc)(Redirect.Replace))
+    (
+      staticRoute("#error", ErrorLoc) ~>  render( <.h1("Errored!!!!") ) |
+      staticRoute("#services", ServicesLoc) ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ServicesComp(ctl, props))) |
+      staticRoute("#functions", FunctionsLoc) ~> renderR(ctl => functionsWrapper((props: ModelProxy[Seq[Function]]) => FunctionsComp(ctl, props))) |
+      dynamicRouteCT("#service" / string("[a-zA-Z0-9]+").caseClass[ServiceLoc]) ~> dynRender(x => <.h1(s"Service ${x.asInstanceOf[ServiceLoc].id}!!!!")) |
+      dynamicRouteCT("#function" / string("[a-zA-Z0-9]+").caseClass[FunctionLoc]) ~> dynRender(x => <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!"))
+//        |
+//      dynamicRoute(r) ~> dynRender(x => <.h1(s"Chicken ${x}!!!!") )
+      ).notFound(redirectToPage(ErrorLoc)(Redirect.Replace))
+
   }.renderWith(layout)
 
-  val todoCountWrapper = SPACircuit.connect(model => (model.todos.map(_.items.count(!_.completed)).toOption, model.pageXXs.map(_.items.count(!_.completed)).toOption))
+
+  val serviceCounterWrapper = SPACircuit.connect(model => (model.services.map(_.services.size)).toOption)
 
   // base layout for all pages
   def layout(c: RouterCtl[Loc], r: Resolution[Loc]) = {
@@ -52,7 +68,7 @@ object SPAMain extends js.JSApp {
           <.div(^.className := "navbar-header", <.span(^.className := "navbar-brand", "SPA Tutorial")),
           <.div(^.className := "collapse navbar-collapse",
             // connect menu to model, because it needs to update when the number of open todos changes
-            todoCountWrapper((proxy: ModelProxy[(Option[Int], Option[Int])]) => MainMenu(c, r.page, proxy))
+            serviceCounterWrapper((proxy: ModelProxy[Option[Int]]) => MainMenu(c, r.page, proxy)) //!@ remove this
 
           )
         )

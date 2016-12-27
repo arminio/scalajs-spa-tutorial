@@ -1,5 +1,7 @@
 package spatutorial.shared
 
+
+
 trait Api {
   // message of the day
   def welcomeMsg(name: String): String
@@ -21,5 +23,7 @@ trait Api {
 
   // delete a PageXX
   def deletePageXX(itemId: String): Seq[PageXXItem]
-  
+
+
+//!@  def getPage(pageIdentifier: PageIdentifier): Page
 }

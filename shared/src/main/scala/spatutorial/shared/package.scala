@@ -7,6 +7,9 @@ package object shared {
   type Amount = BigDecimal
   type Status = String
 
+  type PageIdentifier = String
+  type SaveFunction = Unit => Unit
+
 
 }
 
