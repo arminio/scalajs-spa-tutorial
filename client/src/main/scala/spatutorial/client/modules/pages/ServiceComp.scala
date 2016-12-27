@@ -84,11 +84,10 @@ object ServiceDetailsComp {
 
     def render(p: Props, state: State) = {
       val isEditing = state.editing
-      val editButton = Button(Button.Props($.modState(state => state.copy(editing = !state.editing)), addStyles = Seq(bss.pullRight)), if (isEditing) "Cancel" else "Edit")
-//      val editButton = <.button(bss.buttonOpt(CommonStyle.default), ^.tpe := "button", ^.onClick --> $.modState(state => state.copy(editing = !state.editing)), if (isEditing) "Cancel" else "Edit")
-      val saveButton = Button(Button.Props( save(p, state), addStyles = Seq(bss.pullRight)), "Save")
-//      val saveButton = <.button(bss.buttonOpt(CommonStyle.default), ^.tpe := "button", "Save", ^.disabled := !isEditing,  ^.onClick --> save(p, state))
-      val backToServicesLink = <.a(bss.button, "Services", ^.onClick --> p.router.set(ServicesLoc))
+      val editButton = Button(Button.Props($.modState(state => state.copy(editing = !state.editing)), addStyles = Seq(bss.buttonPrimary)), if (isEditing) "Cancel" else "Edit")
+      val saveButton = Button(Button.Props( save(p, state)), "Save")
+      val backToServicesLink = Button(Button.Props( p.router.set(ServicesLoc), addStyles = Seq(bss.buttonDefault, bss.pullRight)), "Services")
+//      val backToServicesLink = <.a(bss.button, "Services", ^.onClick --> p.router.set(ServicesLoc))
 
       <.div(if (isEditing) edit(state.service) else view(state.service),
         editButton,
@@ -103,9 +102,9 @@ object ServiceDetailsComp {
       <.li(^.key := s"${s.id}-provider", s.provider.toString)
     ))
 
-    def edit(s: Service) = <.span(<.ul()(
-      <.li(^.key := s"${s.id}-serviceName", <.input.text(^.value := s.serviceName, ^.placeholder := "Service Name", ^.onChange ==> updateServiceName)),
-      <.li(^.key := s"${s.id}-package", <.input.text(^.value := s.`package`, ^.placeholder := "Package filepath", ^.onChange ==> updatePackageFilepath)),
+    def edit(s: Service) = <.span(bss.formGroup, <.ul()(
+      <.li(^.key := s"${s.id}-serviceName", <.input.text(bss.formControl, ^.value := s.serviceName, ^.placeholder := "Service Name", ^.onChange ==> updateServiceName)),
+      <.li(^.key := s"${s.id}-package", <.input.text(bss.formControl, ^.value := s.`package`, ^.placeholder := "Package filepath", ^.onChange ==> updatePackageFilepath)),
       <.li(^.key := s"${s.id}-provider", s.provider.toString)
     ))
 
