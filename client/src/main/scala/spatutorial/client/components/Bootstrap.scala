@@ -36,7 +36,7 @@ object Bootstrap {
     case class Props(onClick: Callback, style: CommonStyle.Value = CommonStyle.default, addStyles: Seq[StyleA] = Seq())
 
     val component = ReactComponentB[Props]("Button")
-      .renderPC((_, p, c) =>
+      .renderPC((_, p, c: PropsChildren) =>
         <.button(bss.buttonOpt(p.style), p.addStyles, ^.tpe := "button", ^.onClick --> p.onClick, c)
       ).build
 

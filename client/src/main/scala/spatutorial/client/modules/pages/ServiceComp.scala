@@ -11,7 +11,7 @@ import spatutorial.client.components.Bootstrap._
 import spatutorial.client.components.GlobalStyles
 import spatutorial.client.services._
 import spatutorial.shared._
-
+import scalacss.ScalaCssReact._
 
 object ServiceComp {
 
@@ -58,6 +58,8 @@ object ServiceComp {
 
 
 object ServiceDetailsComp {
+
+
   val component = ReactComponentB[Props]("ServiceDetailsComp")
     .initialState_P(p => State(p.service))
     .renderBackend[Backend]
@@ -75,14 +77,23 @@ object ServiceDetailsComp {
 
   class Backend($: BackendScope[Props, State]) {
 
+    @inline private def bss = GlobalStyles.bootstrapStyles
+
     def editing =
       $.modState(s => s.copy(editing = !s.editing))
 
     def render(p: Props, state: State) = {
-      <.div(if (state.editing) edit(state.service) else view(state.service),
-        <.button(if (state.editing) "Cancel" else "Edit", ^.onClick --> $.modState(state => state.copy(editing = !state.editing))),
-        if (state.editing) <.button("Save", ^.disabled := !state.editing,  ^.onClick --> save(p, state)) else EmptyTag,
-        <.a("Services", ^.onClick --> p.router.set(ServicesLoc))
+      val isEditing = state.editing
+      val editButton = Button(Button.Props($.modState(state => state.copy(editing = !state.editing)), addStyles = Seq(bss.pullRight)), if (isEditing) "Cancel" else "Edit")
+//      val editButton = <.button(bss.buttonOpt(CommonStyle.default), ^.tpe := "button", ^.onClick --> $.modState(state => state.copy(editing = !state.editing)), if (isEditing) "Cancel" else "Edit")
+      val saveButton = Button(Button.Props( save(p, state), addStyles = Seq(bss.pullRight)), "Save")
+//      val saveButton = <.button(bss.buttonOpt(CommonStyle.default), ^.tpe := "button", "Save", ^.disabled := !isEditing,  ^.onClick --> save(p, state))
+      val backToServicesLink = <.a(bss.button, "Services", ^.onClick --> p.router.set(ServicesLoc))
+
+      <.div(if (isEditing) edit(state.service) else view(state.service),
+        editButton,
+        if (isEditing) saveButton else EmptyTag,
+        backToServicesLink
       )
     }
 
