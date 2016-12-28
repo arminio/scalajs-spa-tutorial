@@ -66,20 +66,11 @@ object Tree {
 
 
     def initData = {
-        val data: TreeItem = TreeItem("root",
-          TreeItem("dude1",
-            TreeItem("dude1c")),
-          TreeItem("dude2"),
-          TreeItem("dude3"),
-          TreeItem("dude4",
-            TreeItem("dude4c",
-              TreeItem("dude4cc")))
-        )
 
       t.modState { state =>
-        def getChildren(s: Service) = s.functions.map(f => TreeItem(f.name))
+        def getChildren(s: Service) = s.functions.map(f => TreeItem(<.button(f.name))) //!@ can this be generalized?
 
-        val myData = TreeItem("Services", state.services.services.map(s => TreeItem(s.serviceName, getChildren(s):_*)):_*)
+        val myData = TreeItem("Services", state.services.services.map(s => TreeItem(<.button(s.serviceName), getChildren(s):_*)):_*)
         state.copy(data = myData)
       }
     }

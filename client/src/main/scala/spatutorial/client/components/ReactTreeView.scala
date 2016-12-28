@@ -2,13 +2,26 @@ package spatutorial.client.components
 
 import japgolly.scalajs.react.CompScope._
 import japgolly.scalajs.react._
+import japgolly.scalajs.react.vdom.Builder
 import japgolly.scalajs.react.vdom.prefix_<^._
+import spatutorial.shared.Identifier
 
 import scala.scalajs.js
 
-case class TreeItem(item: Any, children: TreeItem*) {
-  def apply(item: Any): TreeItem = this(item, Nil)
+//trait IdProvider extends TagMod {
+//  val id: Identifier
+//}
+//
+//case object IdProvider  {
+//
+//}
+
+case class TreeItem(item: TagMod , children: TreeItem*) {
+  def apply(item: TagMod): TreeItem = TreeItem(item, Nil:_*)
 }
+//case class TreeItem(item: IdProvider , children: TreeItem*) {
+//  def apply(item: Any): TreeItem = this(item, Nil)
+//}
 
 object ReactTreeView {
 
@@ -143,7 +156,8 @@ object ReactTreeView {
         <.span(
           S.selected ?= P.style.selectedTreeItemContent,
           ^.onClick ==> onItemSelect(P),
-          P.root.item.toString
+//!@          P.root.item.toString
+          P.root.item
         ),
         <.ul(P.style.treeGroup)(
           S.children.map(child =>
