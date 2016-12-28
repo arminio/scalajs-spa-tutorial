@@ -9,7 +9,7 @@ import japgolly.scalajs.react.vdom.prefix_<^.{<, _}
 import org.scalajs.dom
 import spatutorial.client.SPAMain.{FunctionsLoc, Loc, ServiceLoc}
 import spatutorial.client.components.Bootstrap._
-import spatutorial.client.components.{ReactTreeView, TreeItem}
+import spatutorial.client.components.{IdProvider, ReactTreeView, TreeItem}
 import spatutorial.client.services._
 import spatutorial.shared.Service
 
@@ -58,7 +58,7 @@ object Tree {
 
   case class State(content: String = "", services: Services, data: TreeItem)
   object State {
-    def apply(services: Services): State = State(content = "", services = services, TreeItem(item = "Loading"))
+    def apply(services: Services): State = State(content = "", services = services, TreeItem(item = IdProvider(<.button("Loading"),"Loading.", "")))
   }
   case class Props(parentProps: TreeComp.Props, services: Services)
 
@@ -68,9 +68,10 @@ object Tree {
     def initData = {
 
       t.modState { state =>
-        def getChildren(s: Service) = s.functions.map(f => TreeItem(<.button(f.name))) //!@ can this be generalized?
+        def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(^.id := f.id.str, f.name), f.id.str, s.toString + f.toString))) //!@ can this be generalized?
 
-        val myData = TreeItem("Services", state.services.services.map(s => TreeItem(<.button(s.serviceName), getChildren(s):_*)):_*)
+        println(s"=====> ${state.services.services}")
+        val myData = TreeItem(IdProvider(<.button ("Services"), "ROOT", "Services"), state.services.services.map(s => TreeItem(IdProvider(<.button(^.id := s.id.str, s.serviceName), s.id.str, s.toString), getChildren(s):_*)):_*)
         state.copy(data = myData)
       }
     }
