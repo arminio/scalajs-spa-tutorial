@@ -4,8 +4,10 @@ import diode.react._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
+import org.scalajs.dom
 import spatutorial.client.SPAMain.{FunctionLoc, Loc}
 import spatutorial.client.components.Bootstrap._
+import spatutorial.client.components.{ReactTreeView, TreeItem}
 import spatutorial.client.services._
 import spatutorial.shared._
 
@@ -47,7 +49,8 @@ object ListFunctionsComp {
               )
             }
           )
-        )
+        ), <.div()
+        , <.div(ChickenTree())
       )
   }
 
@@ -60,6 +63,59 @@ object ListFunctionsComp {
 
   /** Returns a function compatible with router location system while using our own props */
   def apply(router: RouterCtl[Loc], proxy: ModelProxy[Seq[Function]]) = component(Props(router, proxy))
+}
+
+
+
+
+
+////////////// TREE
+object ChickenTree {
+  val data = TreeItem("root",
+    TreeItem("dude1",
+      TreeItem("dude1c")),
+    TreeItem("dude2"),
+    TreeItem("dude3"),
+    TreeItem("dude4",
+      TreeItem("dude4c",
+        TreeItem("dude4cc")))
+  )
+
+  case class State(content: String = "")
+
+  class Backend(t: BackendScope[_, _]) {
+
+    def itemSelectF(item: String, parent: String, depth: Int): Callback = {
+      val content =
+        s"""Selected Item: $item <br>
+           |Its Parent : $parent <br>
+           |Its depth:  $depth <br>
+        """.stripMargin
+      Callback(dom.document.getElementById("treeviewcontent").innerHTML = content)
+    }
+
+    def render = {
+      <.div(
+        <.h3("Demo"),
+
+            ReactTreeView(
+              root = data,
+              openByDefault = true,
+              onItemSelect = itemSelectF _,
+              showSearchBox = true
+            ),
+            <.strong(^.id := "treeviewcontent")
+          )
+
+    }
+  }
+
+  val component = ReactComponentB[Unit]("ReactTreeViewDemo")
+    .initialState(State())
+    .renderBackend[Backend]
+    .build
+
+  def apply() = component()
 }
 
 //object TodoForm {
