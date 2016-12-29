@@ -3,6 +3,7 @@ package spatutorial.client.services
 import diode._
 import diode.data._
 import diode.react.ReactConnector
+//import japgolly.scalajs.react.extra.router.Action
 import spatutorial.shared._
 
 import scala.concurrent.Future
@@ -12,6 +13,7 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 case object LoadServices extends Action   //!@ should Load take a Loc so it can reload on any entry?
 case class UpdateAllServices(services: Seq[Service]) extends Action
 case class SaveService(service: Service) extends Action
+case class LocTreeItemSelected(itemId : String) extends Action
 
 
 case class Services(services: Seq[Service]) {
@@ -31,6 +33,16 @@ case class Services(services: Seq[Service]) {
 
 
 
+class TreeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(modelRW) {
+  override protected def handle: PartialFunction[Any, ActionResult[M]] = {
+
+    case LocTreeItemSelected(selectedItemId : String) =>
+      println(s"handling tree node selection: $selectedItemId")
+      updated(Identifier(value.str))
+
+  }
+
+}
 class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandler(modelRW) {
 
   val testServices = Seq(
@@ -75,16 +87,17 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
 
 
 // The base model of our application
-case class RootModel(services: Pot[Services])
+case class RootModel(services: Pot[Services], selectedItemId: Identifier)
 
 
 // Application circuit
 object SPACircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
   // initial application model
-  override protected def initialModel = RootModel(Empty)
+  override protected def initialModel = RootModel(Empty, Identifier("NotSet","NotSet","NotSet"))
   // combine all handlers into one
   override protected val actionHandler = composeHandlers(
 
-    new ServiceHandler(zoomRW(_.services)((m, v) => m.copy(services = v)))
+    new ServiceHandler(zoomRW(_.services)((m, v) => m.copy(services = v))),
+    new TreeHandler(zoomRW(_.selectedItemId)((m,v) => m.copy(selectedItemId = v)))
   )
 }

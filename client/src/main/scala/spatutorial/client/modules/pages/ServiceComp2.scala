@@ -20,16 +20,16 @@ object ServiceComp2 {
   class Backend($: BackendScope[Props, _]) {
     def mounted(props: Props) =
     // dispatch a message to refresh the todos, which will cause TodoStore to fetch todos from the server
-      Callback.when(props.proxy().isEmpty)(props.proxy.dispatchCB(LoadServices))
+      Callback.when(props.proxy().services.isEmpty)(props.proxy.dispatchCB(LoadServices))
 
 
     def render(p: Props) = {
-      val proxy = p.proxy()
+      val servicesPot = p.proxy().services
 
       Panel(Panel.Props("Service"), <.div(
-        proxy.renderFailed(ex => "Error loading"),
-        proxy.renderPending(_ > 5000, _ => "Loading..."),
-        proxy.render { services => {
+        servicesPot.renderFailed(ex => "Error loading"),
+        servicesPot.renderPending(_ > 5000, _ => "Loading..."),
+        servicesPot.render { services => {
           services.services.find(s => s.id == p.serviceIdentifier).map(s => ServiceDetailsComp2(s, p.router, p.proxy))
             .fold(
               //None/empty case
@@ -51,10 +51,10 @@ object ServiceComp2 {
     .build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(router: RouterCtl[Loc], identifier: Identifier, proxy: ModelProxy[Pot[Services]]) = component(Props(router, identifier, proxy))
+  def apply(router: RouterCtl[Loc], identifier: Identifier, proxy: ModelProxy[RootModel]) = component(Props(router, identifier, proxy))
 
 
-  case class Props(router: RouterCtl[Loc], serviceIdentifier: Identifier, proxy: ModelProxy[Pot[Services]])
+  case class Props(router: RouterCtl[Loc], serviceIdentifier: Identifier, proxy: ModelProxy[RootModel])
 
 }
 
@@ -67,12 +67,12 @@ object ServiceDetailsComp2 {
     //    .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
 
-  def apply(service: Service, router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]]) = component(Props(service, router, proxy))
+  def apply(service: Service, router: RouterCtl[Loc], proxy: ModelProxy[RootModel]) = component(Props(service, router, proxy))
 
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props(service: Service, router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]])
+  case class Props(service: Service, router: RouterCtl[Loc], proxy: ModelProxy[RootModel])
 
   case class State(service: Service, editing: Boolean = false)
 

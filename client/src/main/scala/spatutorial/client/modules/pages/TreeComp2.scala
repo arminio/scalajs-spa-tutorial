@@ -17,20 +17,21 @@ import scalacss.ScalaCssReact._
 
 object TreeComp2 {
 
-  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]], children: ReactNode*)
+  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[RootModel], children: ReactNode*)
 
   case class State()
 
   class Backend($: BackendScope[Props, State]) {
     def mounted(props: Props) =
       // dispatch a message to refresh the todos, which will cause TodoStore to fetch todos from the server
-      Callback.when(props.proxy().isEmpty)(props.proxy.dispatchCB(LoadServices))
+      Callback.when(props.proxy().services.isEmpty)(props.proxy.dispatchCB(LoadServices))
 
-    def render(props: Props, s: State) =
+    def render(props: Props, s: State) =  {
+      val potSservices = props.proxy().services
       <.div(
-        props.proxy().renderFailed(ex => "Error loading"),
-        props.proxy().renderPending(_ > 5000, _ => "Loading..."),
-        props.proxy().render { (services: Services) =>
+        potSservices.renderFailed(ex => "Error loading"),
+        potSservices.renderPending(_ > 5000, _ => "Loading..."),
+        potSservices.render { services =>
           <.div(^.className := "container-fluid",
             <.div(^.className := "row",
               <.div(^.className := "pull-left col-sm-3", Tree2(props, services)),
@@ -39,6 +40,7 @@ object TreeComp2 {
           )
         }
       )
+    }
   }
 
   // create the React component for To Do management
@@ -49,7 +51,7 @@ object TreeComp2 {
     .build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]], children: ReactNode*) = component(Props(router, proxy, children:_*))
+  def apply(router: RouterCtl[Loc], proxy: ModelProxy[RootModel], children: ReactNode*) = component(Props(router, proxy, children:_*))
 }
 
 
@@ -65,13 +67,13 @@ object Tree2 {
 
 
   case class State(content: String = "", services: Services, data: TreeItem)
+
   object State {
     def apply(services: Services): State = State(content = "", services = services, TreeItem(item = IdProvider(<.button("Loading"),"Loading.", "")))
   }
   case class Props(parentProps: TreeComp2.Props, services: Services)
 
   class Backend($: BackendScope[Props, State]) {
-
 
     def initData = {
 
@@ -86,7 +88,7 @@ object Tree2 {
 
     def itemSelectPF(p:Props, item: String, parent: String, depth: Int): Callback = {
 //!@? this should result in rendering the selected item on the right:
-      // p.parentProps.proxy.dispatchCB(LocTreeItemSelected(item)) >>
+      p.parentProps.proxy.dispatchCB(LocTreeItemSelected(item)) >>
       itemSelectF(item,parent,depth)
     }
 

@@ -11,7 +11,7 @@ import spatutorial.client.components.GlobalStyles
 import spatutorial.client.logger._
 import spatutorial.client.modules._
 import spatutorial.client.modules.pages._
-import spatutorial.client.services.{SPACircuit, Services}
+import spatutorial.client.services.{RootModel, SPACircuit, Services}
 import spatutorial.shared.{Function, Identifier, Service}
 
 import scala.scalajs.js
@@ -44,6 +44,7 @@ object SPAMain extends js.JSApp {
   val routerConfig = RouterConfigDsl[Loc].buildConfig { dsl =>
     import dsl._
     val servicesWrapper = SPACircuit.connect(_.services)
+    val rootWrapper = SPACircuit.connect(rootModel => rootModel)
     val functionsWrapper = SPACircuit.connect(_.services.get.services.flatMap(service => service.functions))
 
     // wrap/connect components to the circuit
@@ -55,8 +56,11 @@ object SPAMain extends js.JSApp {
 //        staticRoute("#tree", TreeLoc)
 //          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp(ctl, props)))
 //        |
+//        staticRoute("#tree2", TreeLoc2) //!@ rename the url and Loc
+//          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp2(ctl, props, ServiceComp2(ctl, () => Identifier("FIXME", "FIXME", "FIXME"), props))))
+//        |
         staticRoute("#tree2", TreeLoc2) //!@ rename the url and Loc
-          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp2(ctl, props, ServiceComp2(ctl, Identifier("FIXME", "FIXME", "FIXME"), props))))
+          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp2(ctl, props, ServiceComp2(ctl, Identifier("FIXME", "FIXME", "FIXME"), props))))
         |
         staticRoute("#services", ServicesLoc)
           ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))
