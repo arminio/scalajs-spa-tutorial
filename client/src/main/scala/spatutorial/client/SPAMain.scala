@@ -10,7 +10,7 @@ import org.scalajs.dom
 import spatutorial.client.components.GlobalStyles
 import spatutorial.client.logger._
 import spatutorial.client.modules._
-import spatutorial.client.modules.pages.{ListFunctionsComp, ListOfServicesComp, ServiceComp, TreeComp}
+import spatutorial.client.modules.pages._
 import spatutorial.client.services.{SPACircuit, Services}
 import spatutorial.shared.{Function, Identifier, Service}
 
@@ -28,6 +28,7 @@ object SPAMain extends js.JSApp {
   case object ServicesLoc extends Loc
   case object FunctionsLoc extends Loc
   case object TreeLoc extends Loc
+  case object TreeLoc2 extends Loc
   case class ServiceLoc(id: String) extends Loc
   case class FunctionLoc(id: String) extends Loc
 
@@ -51,8 +52,11 @@ object SPAMain extends js.JSApp {
       staticRoute("#error", ErrorLoc)
         ~> render(<.h1("Errored!!!!"))
         |
-        staticRoute("#tree", TreeLoc)
-          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp(ctl, props)))
+//        staticRoute("#tree", TreeLoc)
+//          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp(ctl, props)))
+//        |
+        staticRoute("#tree2", TreeLoc2) //!@ rename the url and Loc
+          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp2(ctl, props, ServiceComp2(ctl, Identifier("FIXME", "FIXME", "FIXME"), props))))
         |
         staticRoute("#services", ServicesLoc)
           ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))
@@ -90,7 +94,8 @@ object SPAMain extends js.JSApp {
         )
       ),
       // currently active module is shown in this container
-      <.div(^.className := "container", r.render())
+//      <.div(^.className := "container", r.render())
+      <.div( r.render())
     )
   }
 
