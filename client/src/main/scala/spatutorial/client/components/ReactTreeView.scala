@@ -76,7 +76,7 @@ object ReactTreeView {
 
       val tell: Callback =
         P.onItemSelect.asCbo(
-          selected.props.root.item.toString,
+          selected.props.root.item.id,
           selected.props.parent,
           selected.props.depth
         )
