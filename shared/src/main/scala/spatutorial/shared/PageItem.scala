@@ -41,7 +41,7 @@ case class Function(
                      name: String,
                      handler: String,
                      events: Seq[Event]
-                   ) extends Kind[Service]
+                   ) extends Kind[Function]
 
 trait Event
 

@@ -68,10 +68,10 @@ object Tree {
     def initData = {
 
       t.modState { state =>
-        def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(^.id := f.id.str, f.name), f.id.str, s.serviceName + f.toString))) //!@ can this be generalized?
+        def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
 
         println(s"=====> ${state.services.services}")
-        val myData = TreeItem(IdProvider(<.button ("Services"), "ROOT", "Services"), state.services.services.map(s => TreeItem(IdProvider(<.button(^.id := s.id.str, s.serviceName), s.id.str, s.toString), getChildren(s):_*)):_*)
+        val myData = TreeItem(IdProvider(<.button ("Services"), "ROOT", "Services"), state.services.services.map(s => TreeItem(IdProvider(<.button(^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
         state.copy(data = myData)
       }
     }
