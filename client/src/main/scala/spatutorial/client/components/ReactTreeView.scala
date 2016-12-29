@@ -32,9 +32,9 @@ object ReactTreeView {
 
     def treeItem = Seq(^.listStyleType := "none")
 
-    def selectedTreeItemContent = Seq(^.backgroundColor := "#1B8EB0",
-      ^.color := "white", ^.fontWeight := 400,
-      ^.padding := "0 7px")
+    def selectedTreeItemContent = Seq( //^.backgroundColor := "#1B8EB0",
+      ^.color := "blue", ^.fontWeight := 400,
+      ^.padding := "0 19px")
 
     def treeItemBefore = Seq(
       ^.display := "inline-block",

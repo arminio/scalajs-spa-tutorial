@@ -65,6 +65,8 @@ class BootstrapStyles(implicit r: mutable.Register) extends StyleSheet.Inline()(
   val buttonXS = styleWrap("btn-xs")
   val buttonPrimary = styleWrap("btn-primary")
   val buttonDefault = styleWrap("btn-default")
+  val buttonBlockPrimary = styleWrap("btn btn-primary btn-block")
+  val buttonBlockDefault = styleWrap("btn default btn-block")
 
   val close = styleWrap("close")
 
