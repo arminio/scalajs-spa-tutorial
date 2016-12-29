@@ -15,18 +15,7 @@ import scalacss.ScalaCssReact._
 
 object ServiceComp {
 
-  // create the React component for To Do management
-  val component = ReactComponentB[Props]("Service")
-    .renderBackend[Backend]
-    .componentDidMount(scope => scope.backend.mounted(scope.props))
-    .build
-
-  /** Returns a function compatible with router location system while using our own props */
-  def apply(router: RouterCtl[Loc], identifier: Identifier, proxy: ModelProxy[Pot[Services]]) = component(Props(router, identifier, proxy))
-
   @inline private def bss = GlobalStyles.bootstrapStyles
-
-  case class Props(router: RouterCtl[Loc], serviceIdentifier: Identifier, proxy: ModelProxy[Pot[Services]])
 
   class Backend($: BackendScope[Props, _]) {
     def mounted(props: Props) =
@@ -54,6 +43,19 @@ object ServiceComp {
     }
 
   }
+
+  // create the React component for To Do management
+  val component = ReactComponentB[Props]("Service")
+    .renderBackend[Backend]
+    .componentDidMount(scope => scope.backend.mounted(scope.props))
+    .build
+
+  /** Returns a function compatible with router location system while using our own props */
+  def apply(router: RouterCtl[Loc], identifier: Identifier, proxy: ModelProxy[Pot[Services]]) = component(Props(router, identifier, proxy))
+
+
+  case class Props(router: RouterCtl[Loc], serviceIdentifier: Identifier, proxy: ModelProxy[Pot[Services]])
+
 }
 
 
