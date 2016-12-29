@@ -8,7 +8,7 @@ import japgolly.scalajs.react.vdom.prefix_<^._
  */
 object Icon {
   type Icon = ReactNode
-  def apply(name: String): Icon = <.i(^.className := s"fa fa-$name")
+  def apply(name: String, size: Option[String ]= None): Icon = <.i(^.className := s"fa fa-$name ${size.map(s => s"fa-$s").getOrElse("")}")
 
   def adjust = apply("adjust")
   def adn = apply("adn")
@@ -32,10 +32,13 @@ object Icon {
   def archive = apply("archive")
   def areaChart = apply("area-chart")
   def arrowCircleDown = apply("arrow-circle-down")
+  def arrowCircleDown2x = apply("arrow-circle-down", Some("2x"))
   def arrowCircleLeft = apply("arrow-circle-left")
   def arrowCircleODown = apply("arrow-circle-o-down")
+  def arrowCircleODown2x = apply("arrow-circle-o-down", Some("2x"))
   def arrowCircleOLeft = apply("arrow-circle-o-left")
   def arrowCircleORight = apply("arrow-circle-o-right")
+  def arrowCircleORight2x = apply("arrow-circle-o-right", Some("2x"))
   def arrowCircleOUp = apply("arrow-circle-o-up")
   def arrowCircleRight = apply("arrow-circle-right")
   def arrowCircleUp = apply("arrow-circle-up")
