@@ -6,11 +6,12 @@ import diode.react._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^.{<, _}
-import spatutorial.client.SPAMain.{Loc, ServicesLoc}
+import spatutorial.client.SPAMain.{Loc, ServicesLoc, TreeLoc, TreeLoc2}
 import spatutorial.client.components.Bootstrap._
 import spatutorial.client.components.GlobalStyles
 import spatutorial.client.services._
 import spatutorial.shared._
+
 import scalacss.ScalaCssReact._
 
 object ServiceComp2 {
@@ -30,10 +31,21 @@ object ServiceComp2 {
         servicesPot.renderFailed(ex => "Error loading"),
         servicesPot.renderPending(_ > 5000, _ => "Loading..."),
         servicesPot.render { services => {
-          services.services.find(s => s.id == p.serviceIdentifier).map(s => ServiceDetailsComp2(s, p.router, p.proxy))
+
+          val selectedItemId = p.proxy.value.selectedItemId
+          println(s"rendering ServiceComp2 selectedItemI: $selectedItemId")
+          services.services.find(s => {
+
+            s.id == selectedItemId
+          }).map { s =>
+            println(s"rendering ServiceDetailsComp2 selectedItemI: $s")
+
+            ServiceDetailsComp2(s, p.router, p.proxy)
+          }
+            //          services.services.find(s => s.id == p.serviceIdentifier).map(s => ServiceDetailsComp2(s, p.router, p.proxy))
             .fold(
               //None/empty case
-              <.div(s"service with id: ${p.serviceIdentifier} (OR ${p.serviceIdentifier.str})  not found!")
+              <.div(s"service with id: ${selectedItemId} (OR ${selectedItemId.str})  not found!")
             )(serviceDetailComp => <.div(serviceDetailComp))
 
         }
@@ -51,10 +63,10 @@ object ServiceComp2 {
     .build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(router: RouterCtl[Loc], identifier: Identifier, proxy: ModelProxy[RootModel]) = component(Props(router, identifier, proxy))
+  def apply(router: RouterCtl[Loc], proxy: ModelProxy[RootModel]) = component(Props(router, proxy))
 
 
-  case class Props(router: RouterCtl[Loc], serviceIdentifier: Identifier, proxy: ModelProxy[RootModel])
+  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[RootModel])
 
 }
 
@@ -64,6 +76,7 @@ object ServiceDetailsComp2 {
   val component = ReactComponentB[Props]("ServiceDetailsComp")
     .initialState_P(p => State(p.service))
     .renderBackend[Backend]
+    .componentWillReceiveProps(x => x.$.modState(_.copy(service = x.nextProps.service)))
     //    .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
 
@@ -129,7 +142,9 @@ object ServiceDetailsComp2 {
       println(s"saving...")
 
       //      props.proxy.dispatchCB(SaveService(state.service)) >> props.router.set(ServicesLoc)
-      props.proxy.dispatchCB(SaveService(state.service)) >> $.modState(s => s.copy(editing = !s.editing))
+      props.proxy.dispatchCB(SaveService(state.service)) >>
+//        CallbackTo( props.router.set(TreeLoc2)) >>
+      $.modState(s => s.copy(editing = !s.editing))
 
     }
 

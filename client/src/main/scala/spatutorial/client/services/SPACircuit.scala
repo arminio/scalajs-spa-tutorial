@@ -38,11 +38,10 @@ class TreeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(mode
 
     case LocTreeItemSelected(selectedItemId : String) =>
       println(s"handling tree node selection: $selectedItemId")
-      updated(Identifier(value.str))
-
+      updated(Identifier(selectedItemId))
   }
-
 }
+
 class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandler(modelRW) {
 
   val testServices = Seq(
@@ -51,21 +50,22 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
       provider = Provider("aws", "java8"),
       `package` = "target/scala-2.11/hello.jar",
       functions = Seq(
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
-      )
-    ),
-    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
-      serviceName = "service 2",
-      provider = Provider("aws", "java8"),
-      `package` = "target/scala-2.11/hello.jar",
-      functions = Seq(
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
+//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
       )
     )
+//    ,
+//    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
+//      serviceName = "service 2",
+//      provider = Provider("aws", "java8"),
+//      `package` = "target/scala-2.11/hello.jar",
+//      functions = Seq(
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
+//      )
+//    )
   )
 
 
@@ -98,6 +98,9 @@ object SPACircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
   override protected val actionHandler = composeHandlers(
 
     new ServiceHandler(zoomRW(_.services)((m, v) => m.copy(services = v))),
-    new TreeHandler(zoomRW(_.selectedItemId)((m,v) => m.copy(selectedItemId = v)))
+    new TreeHandler(zoomRW(_.selectedItemId) { (m, v) =>
+      println(s"updating root model's selected id with $v")
+      m.copy(selectedItemId = v)
+    })
   )
 }

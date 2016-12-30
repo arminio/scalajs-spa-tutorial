@@ -13,6 +13,7 @@ import spatutorial.client.components.{GlobalStyles, IdProvider, ReactTreeView, T
 import spatutorial.client.services._
 import spatutorial.shared.Service
 
+import scala.scalajs.js
 import scalacss.ScalaCssReact._
 
 object TreeComp2 {
@@ -34,6 +35,8 @@ object TreeComp2 {
         potSservices.render { services =>
           <.div(^.className := "container-fluid",
             <.div(^.className := "row",
+//              do like this (from Dashboard code of SPA):
+//          .initialState_P(props => State(props.proxy.connect((m: Pot[String]) => m)))
               <.div(^.className := "pull-left col-sm-3", Tree2(props, services)),
               <.div(^.className := "pull-left col-sm-9", props.children)
             )
@@ -66,7 +69,7 @@ object Tree2 {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
 
-  case class State(content: String = "", services: Services, data: TreeItem)
+  case class State(content: String = "", services: Services, rootTreeItem: TreeItem)
 
   object State {
     def apply(services: Services): State = State(content = "", services = services, TreeItem(item = IdProvider(<.button("Loading"),"Loading.", "")))
@@ -78,16 +81,21 @@ object Tree2 {
     def initData = {
 
       $.modState { state =>
-        def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
 
-        println(s"=====> ${state.services.services}")
-        val myData = TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), state.services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
-        state.copy(data = myData)
+        state.copy(rootTreeItem = convertToTreeItems(state.services))
       }
+    }
+
+    def convertToTreeItems(services: Services) : TreeItem = {
+      def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
+
+      println(s"=====> ${services}")
+      TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
     }
 
     def itemSelectPF(p:Props, item: String, parent: String, depth: Int): Callback = {
 //!@? this should result in rendering the selected item on the right:
+      println(s"tree item selected and selected id update trigger: $item")
       p.parentProps.proxy.dispatchCB(LocTreeItemSelected(item)) >>
       itemSelectF(item,parent,depth)
     }
@@ -107,11 +115,16 @@ object Tree2 {
     }
 
     def render(p:Props, s:State) = {
+
+//      println(s"Tree's S services: ${s.services}")
+//      println(s"Tree's P services: ${p.services}")
+//      println(s"Tree's S Data: ${s.data.children}")
+//      js.debugger
       <.div(
         <.h3("Demo"),
 
         ReactTreeView(
-          root = s.data,
+          root = s.rootTreeItem,
 //          root = data,
           openByDefault = true,
           onItemSelect = itemSelectPF(p , _:String, _:String, _:Int),
@@ -127,7 +140,18 @@ object Tree2 {
     .initialState_P((p: Props) => State(p.services))
     .renderBackend[Backend]
       .componentDidMount(scope => scope.backend.initData)
+//      .componentWillUpdate(f => f.)
+    .componentWillReceiveProps { case ComponentWillReceiveProps(_$, newProps) =>
+      _$.modState {
+        val services = newProps.services
+        println(s"newProps.services ${services}")
+        _.copy(services = services, rootTreeItem = TreeItem(IdProvider(<.div("Fuck this"), "", "")))
+      } >> _$.backend.initData
+//        ???
+    }
+    //    .componentWillReceiveProps(x => x.$.modState(_.copy(services = x.nextProps.services)) >>  x.$.backend.initData)
+//    .componentWillReceiveProps(x => x.$.modState(_.copy(services = x.nextProps.services)))
     .build
 
-  def apply(p: TreeComp2.Props, services: Services) = component(Props(p, services))
+  def apply(parentProps: TreeComp2.Props, services: Services) = component(Props(parentProps, services))
 }

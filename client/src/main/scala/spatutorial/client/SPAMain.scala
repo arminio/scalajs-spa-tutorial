@@ -2,7 +2,8 @@ package spatutorial.client
 
 import diode.data.Pot
 import diode.react.{ModelProxy, ReactConnectProxy}
-import japgolly.scalajs.react.ReactDOM
+import japgolly.scalajs.react.ReactComponentC.BaseCtor
+import japgolly.scalajs.react.{ReactDOM, ReactElement}
 import japgolly.scalajs.react.extra.router.StaticDsl.Route
 import japgolly.scalajs.react.extra.router._
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -60,7 +61,7 @@ object SPAMain extends js.JSApp {
 //          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp2(ctl, props, ServiceComp2(ctl, () => Identifier("FIXME", "FIXME", "FIXME"), props))))
 //        |
         staticRoute("#tree2", TreeLoc2) //!@ rename the url and Loc
-          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp2(ctl, props, ServiceComp2(ctl, Identifier("FIXME", "FIXME", "FIXME"), props))))
+          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp2(ctl, props, ServiceComp2(ctl, props))))
         |
         staticRoute("#services", ServicesLoc)
           ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))

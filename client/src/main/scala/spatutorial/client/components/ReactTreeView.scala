@@ -194,6 +194,8 @@ object ReactTreeView {
     .renderBackend[NodeBackend]
     .componentWillReceiveProps {
       case ComponentWillReceiveProps(_$, newProps) =>
+        println(s"Tree node got new props: $newProps")
+        js.debugger()
         _$.modState(_.copy(children = if (newProps.open) newProps.root.children else Nil))
           .conditionally(newProps.filterMode)
           .void
