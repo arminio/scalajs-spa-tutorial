@@ -206,7 +206,10 @@ object ReactTreeView {
                        filterMode: Boolean)
 
   lazy val TreeNode = ReactComponentB[NodeProps]("ReactTreeNode")
-    .initialState_P(P => if (P.open) NodeState(P.root.children) else NodeState())
+    .initialState_P { P =>
+
+      if (P.open) NodeState(P.root.children) else NodeState()
+    }
     .renderBackend[NodeBackend]
     .componentWillReceiveProps {
       case ComponentWillReceiveProps(_$, newProps) =>
@@ -225,20 +228,20 @@ object ReactTreeView {
     .build
 
   case class Props(proxy: ModelProxy[TreeItem],
-                   pimpedRoot: TreeItem,
+//                   pimpedRoot: TreeItem,
                    open: Boolean,
                    onItemSelect: js.UndefOr[(String, String, Int) => Callback],
                    showSearchBox: Boolean,
                    style: Style)
 
   def apply(proxy: ModelProxy[TreeItem],
-             pimpedRoot: TreeItem,
+//             pimpedRoot: TreeItem,
             openByDefault: Boolean = false,
             onItemSelect: js.UndefOr[(String, String, Int) => Callback] = js.undefined,
             showSearchBox: Boolean = false,
             ref: js.UndefOr[String] = js.undefined,
             key: js.UndefOr[js.Any] = js.undefined,
             style: Style = new Style {}) =
-    component.set(key, ref)(Props(proxy, pimpedRoot: TreeItem, openByDefault, onItemSelect, showSearchBox, style))
+    component.set(key, ref)(Props(proxy, openByDefault, onItemSelect, showSearchBox, style))
 
 }

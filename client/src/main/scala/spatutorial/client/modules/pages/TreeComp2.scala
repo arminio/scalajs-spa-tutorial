@@ -12,7 +12,6 @@ import spatutorial.client.SPAMain.{FunctionsLoc, Loc, ServiceLoc}
 import spatutorial.client.components.Bootstrap._
 import spatutorial.client.components.{GlobalStyles, IdProvider, ReactTreeView, TreeItem}
 import spatutorial.client.services._
-import spatutorial.shared.Service
 
 import scala.scalajs.js
 import scalacss.ScalaCssReact._
@@ -91,13 +90,13 @@ object Tree2 {
 //      }
 //    }
 
-    //!@ remove this as TreeItems are given to us now
-    def convertToTreeItems(services: Services) : TreeItem = {
-      def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
-
-      println(s"=====> ${services}")
-      TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
-    }
+//    //!@ remove this as TreeItems are given to us now
+//    def convertToTreeItems(services: Services) : TreeItem = {
+//      def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
+//
+//      println(s"=====> ${services}")
+//      TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
+//    }
 
     def itemSelectPF(p:Props, item: String, parent: String, depth: Int): Callback = {
 //!@? this should result in rendering the selected item on the right:
@@ -136,7 +135,7 @@ object Tree2 {
 
             ReactTreeView(
               modelProxy,
-              pimpedRoot = modelProxy.value,
+//              pimpedRoot = modelProxy.value,
 
               //          root = data,
               openByDefault = true,
@@ -157,7 +156,7 @@ object Tree2 {
 
   val component = ReactComponentB[Props]("ReactTreeViewDemo")
     .initialState_P { (p: Props) =>
-      val connect = p.proxy.connect(identity)
+      val connect = p.proxy.connect(t => t)
       State(connect)
     }
     .renderBackend[Backend]
