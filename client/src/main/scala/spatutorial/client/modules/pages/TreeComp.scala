@@ -103,13 +103,13 @@ object Tree {
       <.div(
         <.h3("Demo"),
 
-        ReactTreeView(
-          root = s.data,
-//          root = data,
-          openByDefault = true,
-          onItemSelect = itemSelectPF(p , _:String, _:String, _:Int),
-          showSearchBox = true
-        ),
+//!@        ReactTreeView(
+//          root = s.data,
+////          root = data,
+//          openByDefault = true,
+//          onItemSelect = itemSelectPF(p , _:String, _:String, _:Int),
+//          showSearchBox = true
+//        ),
         <.strong(^.id := "treeviewcontent")
       )
 

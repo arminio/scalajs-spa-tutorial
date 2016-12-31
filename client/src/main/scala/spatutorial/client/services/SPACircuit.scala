@@ -3,8 +3,13 @@ package spatutorial.client.services
 import diode._
 import diode.data._
 import diode.react.ReactConnector
+import japgolly.scalajs.react.vdom.prefix_<^._
+import spatutorial.client.components.{GlobalStyles, IdProvider, TreeItem}
 //import japgolly.scalajs.react.extra.router.Action
 import spatutorial.shared._
+
+import scalacss.ScalaCssReact._
+
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -14,6 +19,7 @@ case object LoadServices extends Action   //!@ should Load take a Loc so it can 
 case class UpdateAllServices(services: Seq[Service]) extends Action
 case class SaveService(service: Service) extends Action
 case class LocTreeItemSelected(itemId : String) extends Action
+case class RefreshTree(treeItem: TreeItem) extends Action
 
 
 case class Services(services: Seq[Service]) {
@@ -33,12 +39,21 @@ case class Services(services: Seq[Service]) {
 
 
 
-class TreeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(modelRW) {
+class TreeNodeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(modelRW) {
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
 
     case LocTreeItemSelected(selectedItemId : String) =>
       println(s"handling tree node selection: $selectedItemId")
       updated(Identifier(selectedItemId))
+  }
+}
+
+class TreeHandler[M](modelRW: ModelRW[M, TreeItem]) extends ActionHandler(modelRW) {
+  override protected def handle: PartialFunction[Any, ActionResult[M]] = {
+
+    case RefreshTree(treeItem : TreeItem) =>
+      println(s"handling frefresh tree: $treeItem")
+      updated(treeItem)
   }
 }
 
@@ -68,26 +83,42 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
 //    )
   )
 
+  @inline private def bss = GlobalStyles.bootstrapStyles
+
+
+  def convertToTreeItems(services: Services) : TreeItem = {
+    def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
+//    def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
+
+    println(s"=====> ${services}")
+    TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
+  }
 
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
     case LoadServices =>
       println("load services")
       effectOnly(Effect(Future.successful(testServices).map(UpdateAllServices)))
 
-    case UpdateAllServices(services: Seq[Service]) =>
-      println(s"UpdateAllServicesL $services")
-      updated(Ready(Services(services)))
+    case UpdateAllServices(seqOfServices: Seq[Service]) =>
+      println(s"UpdateAllServicesL $seqOfServices")
+      val services = Services(seqOfServices)
+      updated(Ready(services), Effect(Future.successful(RefreshTree(convertToTreeItems(services)))))
 
     case SaveService(service) =>
       println(s"handling save service: $service")
-      updated(value.map(_.updated(service)))
+      val services: Pot[Services] = value.map(_.updated(service))
+      println(s"New services: $services")
+      updated(services, Effect(Future.successful(RefreshTree(convertToTreeItems(services.getOrElse(throw new RuntimeException("Services are not ready")))))))
+      //      updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteTodo(item.id).call().map(UpdateAllTodos)))
+
+    //      updated(services,Effect(Future.successful(RefreshTree(convertToTreeItems(services)))) )
 
   }
 }
 
 
 // The base model of our application
-case class RootModel(services: Pot[Services], selectedItemId: Identifier)
+case class RootModel(services: Pot[Services], selectedItemId: Identifier, treeRoot: TreeItem = TreeItem(IdProvider.empty))
 
 
 // Application circuit
@@ -98,7 +129,12 @@ object SPACircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
   override protected val actionHandler = composeHandlers(
 
     new ServiceHandler(zoomRW(_.services)((m, v) => m.copy(services = v))),
-    new TreeHandler(zoomRW(_.selectedItemId) { (m, v) =>
+    new TreeHandler(zoomRW(_.treeRoot) { (m, v) =>
+      println(s"updating root model's Root TreeNode $v")
+
+      m.copy(treeRoot = v)
+    }),
+    new TreeNodeHandler(zoomRW(_.selectedItemId) { (m, v) =>
       println(s"updating root model's selected id with $v")
       m.copy(selectedItemId = v)
     })

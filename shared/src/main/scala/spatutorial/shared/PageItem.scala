@@ -13,6 +13,8 @@ case class Identifier(user: String , profile: String , kind: String , uuid: Stri
 }
 
 case object Identifier {
+  val empty = Identifier("no-user", "no-profile", "no-kind" , "no-uuid")
+
   val separator = "-"
 
   def apply(id: String): Identifier = {
