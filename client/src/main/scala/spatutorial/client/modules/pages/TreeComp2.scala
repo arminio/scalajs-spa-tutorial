@@ -38,7 +38,7 @@ object TreeComp2 {
             <.div(^.className := "row",
 //              do like this (from Dashboard code of SPA):
 //          .initialState_P(props => State(props.proxy.connect((m: Pot[String]) => m)))
-              <.div(^.className := "pull-left col-sm-3", s.treeRootWrapper(modelProxy => Tree2(props.router, modelProxy, services))),
+              <.div(^.className := "pull-left col-sm-3", s.treeRootWrapper(modelProxy => Tree2(props.router, modelProxy))),
               <.div(^.className := "pull-left col-sm-9", props.children)
             )
           )
@@ -70,26 +70,26 @@ object TreeComp2 {
 object Tree2 {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[TreeItem], services: Services)
+  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[TreeItem])
 
-  case class State(content: String = "", services: Services, rootTreeItem: TreeItem, treeRootWrapper: ReactConnectProxy[TreeItem])
+  case class State(content: String = "", rootTreeItem: TreeItem, treeRootWrapper: ReactConnectProxy[TreeItem])
 
   object State {
     //!@ remove services
-    def apply(services: Services, treeRootWrapper: ReactConnectProxy[TreeItem]): State
-    = State(content = "", services = services, TreeItem(item = IdProvider(<.button("Loading"),"Loading.", "")), treeRootWrapper)
+    def apply(treeRootWrapper: ReactConnectProxy[TreeItem]): State
+    = State(content = "", TreeItem(item = IdProvider(<.button("Loading"),"Loading.", "")), treeRootWrapper)
   }
 
   class Backend($: BackendScope[Props, State]) {
 
-    //!@ remove this as TreeItems are given to us now
-    def initData = {
-
-      $.modState { state =>
-
-        state.copy(rootTreeItem = convertToTreeItems(state.services))
-      }
-    }
+//    //!@ remove this as TreeItems are given to us now
+//    def initData = {
+//
+//      $.modState { state =>
+//
+//        state.copy(rootTreeItem = convertToTreeItems(state.services))
+//      }
+//    }
 
     //!@ remove this as TreeItems are given to us now
     def convertToTreeItems(services: Services) : TreeItem = {
@@ -157,23 +157,18 @@ object Tree2 {
 
   val component = ReactComponentB[Props]("ReactTreeViewDemo")
     .initialState_P { (p: Props) =>
-      val connect = p.proxy.connect(potServices => potServices)
-      State(p.services, connect)
+      val connect = p.proxy.connect(identity)
+      State(connect)
     }
     .renderBackend[Backend]
-      .componentDidMount(scope => scope.backend.initData)
-//      .componentWillUpdate(f => f.)
-    .componentWillReceiveProps { case ComponentWillReceiveProps(_$, newProps) =>
-      _$.modState {
-        val services = newProps.services
-        println(s"newProps.services ${services}")
-        _.copy(services = services, rootTreeItem = TreeItem(IdProvider(<.div("this chicken"), "", "")))
-      } >> _$.backend.initData
-//        ???
-    }
-    //    .componentWillReceiveProps(x => x.$.modState(_.copy(services = x.nextProps.services)) >>  x.$.backend.initData)
-//    .componentWillReceiveProps(x => x.$.modState(_.copy(services = x.nextProps.services)))
+//      .componentDidMount(scope => scope.backend.initData)
+//    .componentWillReceiveProps { case ComponentWillReceiveProps(_$, newProps) =>
+//      _$.modState {
+//
+//        _.copy(rootTreeItem = TreeItem(IdProvider(<.div("this chicken"), "", "")))
+//      }
+//    }
     .build
 
-  def apply(router: RouterCtl[Loc], proxy: ModelProxy[TreeItem], services: Services) = component(Props(router, proxy, services))
+  def apply(router: RouterCtl[Loc], proxy: ModelProxy[TreeItem]) = component(Props(router, proxy))
 }
