@@ -20,7 +20,7 @@ object TreeComp2 {
 
   case class Props(router: RouterCtl[Loc], proxy: ModelProxy[RootModel], children: ReactNode*)
 
-  case class State()
+  case class State(servicesWrapper: ReactConnectProxy[Pot[Services]])
 
   class Backend($: BackendScope[Props, State]) {
     def mounted(props: Props) =
@@ -37,7 +37,7 @@ object TreeComp2 {
             <.div(^.className := "row",
 //              do like this (from Dashboard code of SPA):
 //          .initialState_P(props => State(props.proxy.connect((m: Pot[String]) => m)))
-              <.div(^.className := "pull-left col-sm-3", Tree2(props, services)),
+              <.div(^.className := "pull-left col-sm-3", s.servicesWrapper(modelProxy => Tree2(props.router, modelProxy, services))),
               <.div(^.className := "pull-left col-sm-9", props.children)
             )
           )
@@ -48,7 +48,8 @@ object TreeComp2 {
 
   // create the React component for To Do management
   val component = ReactComponentB[Props]("TreeComp")
-    .initialState(State())
+//    .initialState_P(props => State(props.proxy.connect((m: Pot[String]) => m)))
+    .initialState_P(props => State(props.proxy.connect(_.services)))
     .renderBackend[Backend]
     .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
@@ -68,13 +69,13 @@ object TreeComp2 {
 object Tree2 {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
+  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]], services: Services)
 
   case class State(content: String = "", services: Services, rootTreeItem: TreeItem)
 
   object State {
     def apply(services: Services): State = State(content = "", services = services, TreeItem(item = IdProvider(<.button("Loading"),"Loading.", "")))
   }
-  case class Props(parentProps: TreeComp2.Props, services: Services)
 
   class Backend($: BackendScope[Props, State]) {
 
@@ -96,7 +97,7 @@ object Tree2 {
     def itemSelectPF(p:Props, item: String, parent: String, depth: Int): Callback = {
 //!@? this should result in rendering the selected item on the right:
       println(s"tree item selected and selected id update trigger: $item")
-      p.parentProps.proxy.dispatchCB(LocTreeItemSelected(item)) >>
+      p.proxy.dispatchCB(LocTreeItemSelected(item)) >>
       itemSelectF(item,parent,depth)
     }
 
@@ -120,18 +121,27 @@ object Tree2 {
 //      println(s"Tree's P services: ${p.services}")
 //      println(s"Tree's S Data: ${s.data.children}")
 //      js.debugger
-      <.div(
-        <.h3("Demo"),
 
-        ReactTreeView(
-          root = s.rootTreeItem,
-//          root = data,
-          openByDefault = true,
-          onItemSelect = itemSelectPF(p , _:String, _:String, _:Int),
-          showSearchBox = true
-        ),
-        <.strong(^.id := "treeviewcontent")
+      <.div(
+      p.proxy().renderPending(_ > 5000, _ => <.p("Loading...")),
+      p.proxy().renderFailed(ex => <.p("Failed to load")),
+      p.proxy().render((services: Services) =>
+        <.div(
+          <.h3("Demo"),
+
+          ReactTreeView(
+            root = s.rootTreeItem,
+            //          root = data,
+            openByDefault = true,
+            onItemSelect = itemSelectPF(p , _:String, _:String, _:Int),
+            showSearchBox = true
+          ),
+          <.strong(^.id := "treeviewcontent")
+        )
       )
+      )
+
+
 
     }
   }
@@ -153,5 +163,5 @@ object Tree2 {
 //    .componentWillReceiveProps(x => x.$.modState(_.copy(services = x.nextProps.services)))
     .build
 
-  def apply(parentProps: TreeComp2.Props, services: Services) = component(Props(parentProps, services))
+  def apply(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]], services: Services) = component(Props(router, proxy, services))
 }
