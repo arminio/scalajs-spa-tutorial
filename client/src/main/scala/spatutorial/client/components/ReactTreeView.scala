@@ -87,7 +87,8 @@ object ReactTreeView {
     def onTextChange(text: String): Callback =
       $.modState(_.copy(filterText = text, filterMode = true))
 
-    def render(P: Props, S: State) =
+    def render(P: Props, S: State) = {
+      println(s"ReactTreeView backend render ${P.root}")
       <.div(P.style.reactTreeView)(
         P.showSearchBox ?= ReactSearchBox(onTextChange = onTextChange),
         TreeNode.withKey("root")(NodeProps(
@@ -99,6 +100,7 @@ object ReactTreeView {
           filterMode   = S.filterMode
         ))
       )
+    }
   }
 
   case class NodeBackend($: BackendScope[NodeProps, NodeState]) {
@@ -126,6 +128,7 @@ object ReactTreeView {
     }
 
     def render(P: NodeProps, S: NodeState): ReactTag = {
+      println(s"ReactTreeView nodeBackend render children of root")
       val depth    = P.depth + 1
 //      val parent   = P.root.item.id
 
@@ -196,14 +199,15 @@ object ReactTreeView {
       case ComponentWillReceiveProps(_$, newProps) =>
         println(s"Tree node got new props: $newProps")
         js.debugger()
-        _$.modState(_.copy(children = if (newProps.open) newProps.root.children else Nil))
+//        _$.modState(_.copy(children = if (newProps.open) newProps.root.children else Nil))
+        _$.modState(_.copy(children = newProps.root.children))
           .conditionally(newProps.filterMode)
           .void
     }
     .build
 
   val component = ReactComponentB[Props]("ReactTreeView")
-    .initialState(State("", false, js.undefined))
+    .initialState(State("", true, js.undefined))
     .renderBackend[Backend]
     .build
 
