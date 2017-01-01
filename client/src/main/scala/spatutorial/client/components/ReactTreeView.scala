@@ -1,16 +1,12 @@
 package spatutorial.client.components
 
-import diode.data.Pot
 import diode.react.{ModelProxy, ReactConnectProxy}
 import japgolly.scalajs.react.CompScope._
-import japgolly.scalajs.react.ReactComponentC.BaseCtor
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.Builder
 import japgolly.scalajs.react.vdom.prefix_<^._
-import spatutorial.client.services.Services
 
 import scala.scalajs.js
-import scala.util.Random
 
 
 
@@ -208,7 +204,7 @@ object ReactTreeView {
               println("2")
               if (isFilterTextExist(P.filterText, childModelProxy.value)) {
                 println("3")
-                TreeNode.withKey(s"$parent$depth${childModelProxy.value.item}${Random.nextInt}")(P.copy(
+                TreeNode.withKey(s"$parent$depth${childModelProxy.value.item}")(P.copy(
                   //                              root = child,
                   treeItemModelProxy = childModelProxy,
                   open = !P.filterText.trim.isEmpty,
@@ -217,7 +213,7 @@ object ReactTreeView {
                   filterText = P.filterText
                 ))
               }              else
-                <.span("No no no")
+                <.span()
 
             })
 
