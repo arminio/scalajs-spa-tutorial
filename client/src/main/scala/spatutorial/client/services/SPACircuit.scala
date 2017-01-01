@@ -38,7 +38,7 @@ case class Services(services: Seq[Service]) {
 }
 
 
-
+// results in a left page being displayed with selected node
 class TreeNodeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(modelRW) {
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
 
@@ -48,11 +48,17 @@ class TreeNodeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(
   }
 }
 
+case class Foo(name:String, is: Int*) {
+  def apply(i : Int): Foo = new Foo(s"$i")
+}
+
+
 class TreeHandler[M](modelRW: ModelRW[M, TreeItem]) extends ActionHandler(modelRW) {
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
 
     case RefreshTree(rootTreeItem : TreeItem) =>
-      //!@println(s"handling frefresh tree root: $rootTreeItem")
+      println(s"handling refresh tree root: $rootTreeItem")
+
       updated(rootTreeItem)
   }
 }
@@ -68,19 +74,19 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
 //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
       )
     )
-    ,
-    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
-      serviceName = "service 2",
-      provider = Provider("aws", "java8"),
-      `package` = "target/scala-2.11/hello.jar",
-      functions = Seq(
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
-        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
-      )
-    )
+//    ,
+//    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
+//      serviceName = "service 2",
+//      provider = Provider("aws", "java8"),
+//      `package` = "target/scala-2.11/hello.jar",
+//      functions = Seq(
+//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
+//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
+//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
+//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
+//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
+//      )
+//    )
   )
 
   @inline private def bss = GlobalStyles.bootstrapStyles
