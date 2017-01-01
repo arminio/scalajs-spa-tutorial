@@ -54,7 +54,7 @@ import boopickle.Default._
 import autowire._
 
 AjaxClient[Api].getTodos().call().foreach { todos =>
-  println(s"Got some things to do $todos")
+  //!@println(s"Got some things to do $todos")
 }
 ```
 

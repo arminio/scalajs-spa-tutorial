@@ -30,7 +30,7 @@ log message into a small JSON object and POSTs it to the specified URL. On the s
 def logging = Action(parse.anyContent) {
   implicit request =>
     request.body.asJson.foreach { msg =>
-      println(s"CLIENT - $msg")
+      //!@println(s"CLIENT - $msg")
     }
     Ok("")
 }

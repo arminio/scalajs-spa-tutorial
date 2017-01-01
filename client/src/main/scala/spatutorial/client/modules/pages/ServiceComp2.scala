@@ -33,12 +33,12 @@ object ServiceComp2 {
         servicesPot.render { services => {
 
           val selectedItemId = p.proxy.value.selectedItemId
-          println(s"rendering ServiceComp2 selectedItemI: $selectedItemId")
+          //!@println(s"rendering ServiceComp2 selectedItemI: $selectedItemId")
           services.services.find(s => {
 
             s.id == selectedItemId
           }).map { s =>
-            println(s"rendering ServiceDetailsComp2 selectedItemI: $s")
+            //!@println(s"rendering ServiceDetailsComp2 selectedItemI: $s")
 
             ServiceDetailsComp2(s, p.router, p.proxy)
           }
@@ -124,14 +124,14 @@ object ServiceDetailsComp2 {
 
     def updateServiceName(e: ReactEventI) = {
       val text = e.target.value
-      println(s"inputted servicename: $text")
+      //!@println(s"inputted servicename: $text")
       // update TodoItem content
       $.modState(state => state.copy(service = state.service.copy(serviceName = text)))
     }
 
     def updatePackageFilepath(e: ReactEventI) = {
       val text = e.target.value
-      println(s"inputted filepath: $text")
+      //!@println(s"inputted filepath: $text")
       // update TodoItem content
       $.modState(state => state.copy(service = state.service.copy(`package` = text)))
     }
@@ -139,7 +139,7 @@ object ServiceDetailsComp2 {
 
     def save(props: Props, state: State) = {
 
-      println(s"saving...")
+      //!@println(s"saving...")
 
       //      props.proxy.dispatchCB(SaveService(state.service)) >> props.router.set(ServicesLoc)
       props.proxy.dispatchCB(SaveService(state.service)) >>

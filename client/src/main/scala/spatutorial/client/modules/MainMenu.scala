@@ -24,7 +24,7 @@ object MainMenu {
 
   private def buildServiceMenu(props: Props): ReactElement = {
     val proxy = props.proxy()
-    println(proxy)
+    //!@println(proxy)
     val pageXXCount = proxy.getOrElse(0)
 
     <.span(
@@ -49,7 +49,7 @@ object MainMenu {
     def mounted(props: Props) = {
       // dispatch a message to refresh the todos
       val empty = props.proxy.value.isEmpty
-      println(empty)
+      //!@println(empty)
 //      js.debugger()
       Callback.when(empty)(props.proxy.dispatchCB(LoadServices))
     }

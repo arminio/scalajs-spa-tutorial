@@ -43,7 +43,7 @@ class TreeNodeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
 
     case LocTreeItemSelected(selectedItemId : String) =>
-      println(s"handling tree node selection: $selectedItemId")
+      //!@println(s"handling tree node selection: $selectedItemId")
       updated(Identifier(selectedItemId))
   }
 }
@@ -51,9 +51,9 @@ class TreeNodeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(
 class TreeHandler[M](modelRW: ModelRW[M, TreeItem]) extends ActionHandler(modelRW) {
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
 
-    case RefreshTree(treeItem : TreeItem) =>
-      println(s"handling frefresh tree: $treeItem")
-      updated(treeItem)
+    case RefreshTree(rootTreeItem : TreeItem) =>
+      //!@println(s"handling frefresh tree root: $rootTreeItem")
+      updated(rootTreeItem)
   }
 }
 
@@ -68,19 +68,19 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
 //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
       )
     )
-//    ,
-//    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
-//      serviceName = "service 2",
-//      provider = Provider("aws", "java8"),
-//      `package` = "target/scala-2.11/hello.jar",
-//      functions = Seq(
-////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
-////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
-////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
-////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
-////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
-//      )
-//    )
+    ,
+    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
+      serviceName = "service 2",
+      provider = Provider("aws", "java8"),
+      `package` = "target/scala-2.11/hello.jar",
+      functions = Seq(
+        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
+        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
+        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
+        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
+        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
+      )
+    )
   )
 
   @inline private def bss = GlobalStyles.bootstrapStyles
@@ -93,21 +93,28 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
     println(s"=====> ${services}")
     TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
   }
+//  def convertToTreeItems(services: Services) : TreeItem = {
+//    def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
+////    def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
+//
+//    //!@println(s"=====> ${services}")
+//    TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
+//  }
 
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
     case LoadServices =>
-      println("load services")
+      //!@println("load services")
       effectOnly(Effect(Future.successful(testServices).map(UpdateAllServices)))
 
     case UpdateAllServices(seqOfServices: Seq[Service]) =>
-      println(s"UpdateAllServicesL $seqOfServices")
+      //!@println(s"UpdateAllServicesL $seqOfServices")
       val services = Services(seqOfServices)
       updated(Ready(services), Effect(Future.successful(RefreshTree(convertToTreeItems(services)))))
 
     case SaveService(service) =>
-      println(s"handling save service: $service")
+      //!@println(s"handling save service: $service")
       val services: Pot[Services] = value.map(_.updated(service))
-      println(s"New services: $services")
+      //!@println(s"New services: $services")
       updated(services, Effect(Future.successful(RefreshTree(convertToTreeItems(services.getOrElse(throw new RuntimeException("Services are not ready")))))))
       //      updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteTodo(item.id).call().map(UpdateAllTodos)))
 
@@ -130,12 +137,12 @@ object SPACircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
     new ServiceHandler(zoomRW(_.services)((m, v) => m.copy(services = v))),
     new TreeHandler(zoomRW(_.treeRoot) { (m, v) =>
-      println(s"updating root model's Root TreeNode $v")
+      //!@println(s"updating root model's Root TreeNode $v")
 
       m.copy(treeRoot = v)
     }),
     new TreeNodeHandler(zoomRW(_.selectedItemId) { (m, v) =>
-      println(s"updating root model's selected id with $v")
+      //!@println(s"updating root model's selected id with $v")
       m.copy(selectedItemId = v)
     })
   )

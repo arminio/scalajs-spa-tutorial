@@ -94,13 +94,13 @@ object Tree2 {
 //    def convertToTreeItems(services: Services) : TreeItem = {
 //      def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
 //
-//      println(s"=====> ${services}")
+//      //!@println(s"=====> ${services}")
 //      TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
 //    }
 
     def itemSelectPF(p:Props, item: String, parent: String, depth: Int): Callback = {
 //!@? this should result in rendering the selected item on the right:
-      println(s"tree item selected and selected id update trigger: $item")
+      //!@println(s"tree item selected and selected id update trigger: $item")
       p.proxy.dispatchCB(LocTreeItemSelected(item)) >>
       itemSelectF(item,parent,depth)
     }
@@ -121,9 +121,9 @@ object Tree2 {
 
     def render(p:Props, s:State) = {
 
-//      println(s"Tree's S services: ${s.services}")
-//      println(s"Tree's P services: ${p.services}")
-//      println(s"Tree's S Data: ${s.data.children}")
+//      //!@println(s"Tree's S services: ${s.services}")
+//      //!@println(s"Tree's P services: ${p.services}")
+//      //!@println(s"Tree's S Data: ${s.data.children}")
 //      js.debugger
 
       <.div(

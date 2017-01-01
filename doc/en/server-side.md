@@ -13,7 +13,7 @@ object Application extends Controller {
 
   def autowireApi(path: String) = Action.async(parse.raw) {
     implicit request =>
-      println(s"Request path: $path")
+      //!@println(s"Request path: $path")
       // get the request body as ByteString
       val b = request.body.asBytes(parse.UNLIMITED).get
 
@@ -30,7 +30,7 @@ object Application extends Controller {
   def logging = Action(parse.anyContent) {
     implicit request =>
       request.body.asJson.foreach { msg =>
-        println(s"CLIENT - $msg")
+        //!@println(s"CLIENT - $msg")
       }
       Ok("")
   }
@@ -57,7 +57,7 @@ class ApiService extends Api {
 
   override def getTodos(): Seq[TodoItem] = {
     // provide some fake Todos
-    println(s"Sending ${todos.size} Todo items")
+    //!@println(s"Sending ${todos.size} Todo items")
     todos
   }
 
@@ -69,19 +69,19 @@ class ApiService extends Api {
         case i if i.id == item.id => item
         case i => i
       }
-      println(s"Todo item was updated: $item")
+      //!@println(s"Todo item was updated: $item")
     } else {
       // add a new item
       val newItem = item.copy(id = UUID.randomUUID().toString)
       todos :+= newItem
-      println(s"Todo item was added: $newItem")
+      //!@println(s"Todo item was added: $newItem")
     }
     todos
   }
 
   // delete a Todo
   override def deleteTodo(itemId: String): Seq[TodoItem] = {
-    println(s"Deleting item with id = $itemId")
+    //!@println(s"Deleting item with id = $itemId")
     todos = todos.filterNot(_.id == itemId)
     todos
   }

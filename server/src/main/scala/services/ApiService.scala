@@ -24,7 +24,7 @@ class ApiService extends Api {
   override def getAllTodos(): Seq[TodoItem] = {
     // provide some fake Todos
     Thread.sleep(300)
-    println(s"Sending ${todos.size} Todo items")
+    //!@println(s"Sending ${todos.size} Todo items")
     todos
   }
 
@@ -36,12 +36,12 @@ class ApiService extends Api {
         case i if i.id == item.id => item
         case i => i
       }
-      println(s"Todo item was updated: $item")
+      //!@println(s"Todo item was updated: $item")
     } else {
       // add a new item
       val newItem = item.copy(id = UUID.randomUUID().toString)
       todos :+= newItem
-      println(s"Todo item was added: $newItem")
+      //!@println(s"Todo item was added: $newItem")
     }
     Thread.sleep(300)
     todos
@@ -50,7 +50,7 @@ class ApiService extends Api {
 
   // delete a Todo
   override def deleteTodo(itemId: String): Seq[TodoItem] = {
-    println(s"Deleting item with id = $itemId")
+    //!@println(s"Deleting item with id = $itemId")
     Thread.sleep(300)
     todos = todos.filterNot(_.id == itemId)
     todos
@@ -59,7 +59,7 @@ class ApiService extends Api {
   override def getAllPageXXs(): Seq[PageXXItem] = {
     // provide some fake PageXXs
     Thread.sleep(300)
-    println(s"Sending ${pageXXs.size} PageXX items")
+    //!@println(s"Sending ${pageXXs.size} PageXX items")
     pageXXs
   }
 
@@ -71,12 +71,12 @@ class ApiService extends Api {
         case i if i.id == item.id => item
         case i => i
       }
-      println(s"PageXX item was updated: $item")
+      //!@println(s"PageXX item was updated: $item")
     } else {
       // add a new item
       val newItem = item.copy(id = UUID.randomUUID().toString)
       pageXXs :+= newItem
-      println(s"PageXX item was added: $newItem")
+      //!@println(s"PageXX item was added: $newItem")
     }
     Thread.sleep(300)
     pageXXs
@@ -84,12 +84,12 @@ class ApiService extends Api {
 
   // delete a PageXX
   override def deletePageXX(itemId: String): Seq[PageXXItem] = {
-    println(s"Deleting item with id = $itemId")
+    //!@println(s"Deleting item with id = $itemId")
     Thread.sleep(300)
     pageXXs = pageXXs.filterNot(_.id == itemId)
     pageXXs
   }
 
 //  override def getPage(pageIdentifier: PageIdentifier): Page =
-//    Page("My Chickens Page", Seq.empty[PageItem], Unit => println("Saved"))
+//    Page("My Chickens Page", Seq.empty[PageItem], Unit => //!@println("Saved"))
 }

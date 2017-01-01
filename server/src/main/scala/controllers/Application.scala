@@ -25,7 +25,7 @@ class Application @Inject() (implicit val config: Configuration, env: Environmen
 
   def autowireApi(path: String) = Action.async(parse.raw) {
     implicit request =>
-      println(s"Request path: $path")
+      //!@println(s"Request path: $path")
 
       // get the request body as ByteString
       val b = request.body.asBytes(parse.UNLIMITED).get
@@ -43,7 +43,7 @@ class Application @Inject() (implicit val config: Configuration, env: Environmen
   def logging = Action(parse.anyContent) {
     implicit request =>
       request.body.asJson.foreach { msg =>
-        println(s"CLIENT - $msg")
+        //!@println(s"CLIENT - $msg")
       }
       Ok("")
   }

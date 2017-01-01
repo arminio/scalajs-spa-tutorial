@@ -112,14 +112,14 @@ object ServiceDetailsComp {
 
     def updateServiceName(e: ReactEventI) = {
       val text = e.target.value
-      println(s"inputted servicename: $text")
+      //!@println(s"inputted servicename: $text")
       // update TodoItem content
       $.modState(state => state.copy(service = state.service.copy(serviceName = text)))
     }
 
     def updatePackageFilepath(e: ReactEventI) = {
       val text = e.target.value
-      println(s"inputted filepath: $text")
+      //!@println(s"inputted filepath: $text")
       // update TodoItem content
       $.modState(state => state.copy(service = state.service.copy(`package` = text)))
     }
@@ -127,7 +127,7 @@ object ServiceDetailsComp {
 
     def save(props: Props, state: State) = {
 
-      println(s"saving...")
+      //!@println(s"saving...")
 
 //      props.proxy.dispatchCB(SaveService(state.service)) >> props.router.set(ServicesLoc)
       props.proxy.dispatchCB(SaveService(state.service)) >> $.modState(s => s.copy(editing = !s.editing))
