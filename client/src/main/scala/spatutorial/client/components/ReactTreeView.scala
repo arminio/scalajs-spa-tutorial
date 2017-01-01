@@ -3,6 +3,7 @@ package spatutorial.client.components
 import diode.data.Pot
 import diode.react.{ModelProxy, ReactConnectProxy}
 import japgolly.scalajs.react.CompScope._
+import japgolly.scalajs.react.ReactComponentC.BaseCtor
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.Builder
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -84,7 +85,7 @@ object ReactTreeView {
 
       val tell: Callback =
         P.onItemSelect.asCbo(
-          selected.props.root.item.id,
+          selected.props.treeItemModelProxy.value.item.id,
           selected.props.parent,
           selected.props.depth
         )
@@ -102,7 +103,8 @@ object ReactTreeView {
           P.showSearchBox ?= ReactSearchBox(onTextChange = onTextChange),
           S.treeItemConnector((m: ModelProxy[TreeItem]) =>
             TreeNode.withKey("root")(NodeProps(
-            root         = m.value, //P.pimpedRoot,
+            treeItemModelProxy = m,
+//            root         = m.value,
             open         = if (S.filterText.nonEmpty) true else P.open,
             onNodeSelect = onNodeSelect(P),
             filterText   = S.filterText,
@@ -122,8 +124,18 @@ object ReactTreeView {
       P.onNodeSelect($.asInstanceOf[NodeC]) >> e.preventDefaultCB >> e.stopPropagationCB
 
     def childrenFromProps(P: NodeProps): CallbackTo[Option[Unit]] =
-      $.modState(S => S.copy(children = if (S.children.isEmpty) P.root.children else Nil))
-        .conditionally(P.root.children.nonEmpty)
+      $.modState(S => S.copy(childrenWrapper =
+        if (S.childrenWrapper.isEmpty)
+          P.treeItemModelProxy.value.children.map(childTreeItem => P.treeItemModelProxy.connect(_ => childTreeItem))
+        else Nil))
+//      $.modState(S => S.copy(childrenWrapper = if (S.childrenWrapper2.isEmpty) P.treeItemModelProxy.value.children else Nil))
+        .conditionally(P.treeItemModelProxy.value.children.nonEmpty)
+
+//    case class NodeState(treeItemWrapper: ReactConnectProxy[TreeItem],
+//                         childrenWrapper: Option[ReactConnectProxy[Seq[TreeItem]]] = None,
+//                         childrenWrapper2: Seq[ReactConnectProxy[TreeItem]] = Nil,
+//                         selected: Boolean = false)
+
 
     def onTreeMenuToggle(P: NodeProps)(e: ReactEventH): Callback =
       childrenFromProps(P) >> e.preventDefaultCB >> e.stopPropagationCB
@@ -145,11 +157,11 @@ object ReactTreeView {
       val depth    = P.depth + 1
 //      val parent   = P.root.item.id
 
-      val parent = if (P.parent.isEmpty) P.root.item.id
-                   else s"${P.parent}<-${P.root.item.id}"
+      val parent = if (P.parent.isEmpty) P.treeItemModelProxy.value.item.id
+                   else s"${P.parent}<-${P.treeItemModelProxy.value.item.id}"
 
       val treeMenuToggle: TagMod =
-        if (S.children.nonEmpty)
+        if (S.childrenWrapper.nonEmpty)
           <.a(
             ^.onClick ==> onTreeMenuToggle(P),
             ^.key := "arrow",
@@ -158,7 +170,7 @@ object ReactTreeView {
 //            Icon.arrowCircleDown2x,
             Icon.arrowCircleODown2x
           )
-        else if (P.root.children.nonEmpty && S.children.isEmpty)
+        else if (P.treeItemModelProxy.value.children.nonEmpty && S.childrenWrapper.isEmpty)
           <.a(
             ^.onClick ==> onTreeMenuToggle(P),
             ^.key := "arrow",
@@ -177,26 +189,71 @@ object ReactTreeView {
           S.selected ?= P.style.selectedTreeItemContent,
           ^.onClick ==> onItemSelect(P),
 //!@          P.root.item.toString
-          P.root.item
+          P.treeItemModelProxy.value.item
         ),
         <.ul(P.style.treeGroup)(
-          S.children.map(child =>
-            isFilterTextExist(P.filterText, child) ?=
-              TreeNode.withKey(s"$parent$depth${child.item}")(P.copy(
-                root = child,
-                open = !P.filterText.trim.isEmpty,
-                depth = depth,
-                parent = parent,
-                filterText = P.filterText
-              ))
-          ))
+
+          S.childrenWrapper.map((childConnector: ReactConnectProxy[TreeItem]) => {
+            childConnector((childModelProxy: ModelProxy[TreeItem]) => {
+              if(isFilterTextExist(P.filterText, childModelProxy.value))
+                            TreeNode.withKey(s"$parent$depth${childModelProxy.value.item}")(P.copy(
+//                              root = child,
+                              treeItemModelProxy =  childModelProxy,
+                              open = !P.filterText.trim.isEmpty,
+                              depth = depth,
+                              parent = parent,
+                              filterText = P.filterText
+                            ))
+              else
+                <.span("No no no")
+
+            })
+
+
+          })
+//          S.childrenWrapper2 match {
+//
+//            case childrenWrapper: Seq[ReactConnectProxy[TreeItem]] =>
+//              childrenWrapper((modelProxy: ModelProxy[Seq[TreeItem]]) => {
+//                val children = modelProxy.value
+//                children.map(child =>
+//                  isFilterTextExist(P.filterText, child) ?=
+//                    TreeNode.withKey(s"$parent$depth${child.item}")(P.copy(
+//                      treeItemModelProxy = modelProxy,
+////                      treeItemModelProxy: ModelProxy[TreeItem]
+//                        //                      root = child,
+//                        open = !P.filterText.trim.isEmpty,
+//                      depth = depth,
+//                      parent = parent,
+//                      filterText = P.filterText
+//                    ))
+//                )
+//              })
+//              ???
+//          }
+        )
+//        <.ul(P.style.treeGroup)(
+//          S.children.map(child =>
+//            isFilterTextExist(P.filterText, child) ?=
+//              TreeNode.withKey(s"$parent$depth${child.item}")(P.copy(
+//                root = child,
+//                open = !P.filterText.trim.isEmpty,
+//                depth = depth,
+//                parent = parent,
+//                filterText = P.filterText
+//              ))
+//          ))
       )
     }
   }
 
-  case class NodeState(children: Seq[TreeItem] = Nil, selected: Boolean = false)
+  case class NodeState(treeItemWrapper: ReactConnectProxy[TreeItem],
+                       //                       childrenWrapper: Option[ReactConnectProxy[Seq[TreeItem]]] = None,
+                       childrenWrapper: Seq[ReactConnectProxy[TreeItem]] = Nil,
+                       selected: Boolean = false)
 
-  case class NodeProps(root: TreeItem,
+  case class NodeProps(treeItemModelProxy: ModelProxy[TreeItem],
+//                       root0: TreeItem,
                        open: Boolean,
                        depth: Int = 0,
                        parent: String = "",
@@ -207,19 +264,20 @@ object ReactTreeView {
 
   lazy val TreeNode = ReactComponentB[NodeProps]("ReactTreeNode")
     .initialState_P { P =>
-
-      if (P.open) NodeState(P.root.children) else NodeState()
+      val reactConnectProxy = P.treeItemModelProxy.connect(identity)
+      if (P.open) NodeState(reactConnectProxy , P.treeItemModelProxy.value.children.map(c => P.treeItemModelProxy.connect(_ => c))) else NodeState(reactConnectProxy)
+//      if (P.open) NodeState(reactConnectProxy ,P.treeItemModelProxy.value.children) else NodeState(reactConnectProxy)
     }
     .renderBackend[NodeBackend]
-    .componentWillReceiveProps {
-      case ComponentWillReceiveProps(_$, newProps) =>
-        println(s"Tree node got new props: $newProps")
-        js.debugger()
-//        _$.modState(_.copy(children = if (newProps.open) newProps.root.children else Nil))
-        _$.modState(_.copy(children = newProps.root.children))
-          .conditionally(newProps.filterMode)
-          .void
-    }
+//    .componentWillReceiveProps {
+//      case ComponentWillReceiveProps(_$, newProps) =>
+//        println(s"Tree node got new props: $newProps")
+//        js.debugger()
+////        _$.modState(_.copy(children = if (newProps.open) newProps.root.children else Nil))
+//        _$.modState(_.copy(children = newProps.root.children))
+//          .conditionally(newProps.filterMode)
+//          .void
+//    }
     .build
 
   val component = ReactComponentB[Props]("ReactTreeView")
