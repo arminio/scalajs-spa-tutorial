@@ -1,17 +1,17 @@
 package spatutorial.client.modules.pages
 
-import diode.data.Pot
 import diode.react.ReactPot._
 import diode.react._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^.{<, _}
-import spatutorial.client.SPAMain.{Loc, ServicesLoc, TreeLoc, TreeLoc2}
+import spatutorial.client.SPAMain.{Loc, ServicesLoc}
 import spatutorial.client.components.Bootstrap._
 import spatutorial.client.components.GlobalStyles
 import spatutorial.client.services._
 import spatutorial.shared._
 
+import scala.scalajs.js
 import scalacss.ScalaCssReact._
 
 object ServiceComp2 {
@@ -85,7 +85,9 @@ object ServiceDetailsComp2 {
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props(service: Service, router: RouterCtl[Loc], proxy: ModelProxy[RootModel])
+  case class Props(service: Service,
+                   router: RouterCtl[Loc],
+                   proxy: ModelProxy[RootModel])
 
   case class State(service: Service, editing: Boolean = false)
 
@@ -99,7 +101,7 @@ object ServiceDetailsComp2 {
     def render(p: Props, state: State) = {
       val isEditing = state.editing
       val editButton = Button(Button.Props($.modState(state => state.copy(editing = !state.editing)), addStyles = Seq(bss.buttonPrimary)), if (isEditing) "Cancel" else "Edit")
-      val saveButton = Button(Button.Props( save(p, state)), "Save")
+      val saveButton = Button(Button.Props(save(p, state)  ), "Save")
       val backToServicesLink = Button(Button.Props( p.router.set(ServicesLoc), addStyles = Seq(bss.buttonDefault, bss.pullRight)), "Services")
       //      val backToServicesLink = <.a(bss.button, "Services", ^.onClick --> p.router.set(ServicesLoc))
 
@@ -139,12 +141,11 @@ object ServiceDetailsComp2 {
 
     def save(props: Props, state: State) = {
 
-      //!@println(s"saving...")
+      println(s"saving...")
+      js.debugger()
 
       //      props.proxy.dispatchCB(SaveService(state.service)) >> props.router.set(ServicesLoc)
-      props.proxy.dispatchCB(SaveService(state.service)) >>
-//        CallbackTo( props.router.set(TreeLoc2)) >>
-      $.modState(s => s.copy(editing = !s.editing))
+      props.proxy.dispatchCB(SaveService(state.service)) >> $.modState(s => s.copy(editing = !s.editing))
 
     }
 

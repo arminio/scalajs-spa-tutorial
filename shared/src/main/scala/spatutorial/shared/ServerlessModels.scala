@@ -3,9 +3,10 @@ package spatutorial.shared
 import java.util.UUID
 
 
-
-
-case class Identifier(user: String , profile: String , kind: String , uuid: String = UUID.randomUUID().toString.replaceAll("-", "") ) {
+case class Identifier(user: String,
+                      profile: String,
+                      kind: String,
+                      uuid: String = UUID.randomUUID().toString.replaceAll("-", "")) {
 
   def str = {
     s"$user%$profile%$kind%$uuid".replaceAll("%", Identifier.separator) //!@ refactor this (list.mkstring("-"))
@@ -13,7 +14,7 @@ case class Identifier(user: String , profile: String , kind: String , uuid: Stri
 }
 
 case object Identifier {
-  val empty = Identifier("no-user", "no-profile", "no-kind" , "no-uuid")
+  val empty = Identifier("no-user", "no-profile", "no-kind", "no-uuid")
 
   val separator = "-"
 
@@ -25,7 +26,6 @@ case object Identifier {
   }
 }
 
-trait Kind[T]
 
 case class Service(
                     id: Identifier,
@@ -33,30 +33,23 @@ case class Service(
                     provider: Provider,
                     `package`: String, // eg: path to jar
                     functions: Seq[Function] = Nil
-                  ) //extends Kind[Service]
+                  )
 
 
 case class Provider(name: String = "aws", runtime: String = "java8")
 
-case class Function(
-                     id: Identifier,
-                     name: String,
-                     handler: String,
-                     events: Seq[Event]
-                   ) //extends Kind[Function]
+case class Function(id: Identifier,
+                    name: String,
+                    handler: String,
+                    httpEvents: Seq[HttpEvent])
 
 //!@doco https://github.com/ochrons/boopickle#automatic-generation-of-hierarchy-picklers
 sealed trait Event {
-  def toYaml: String
+  //  def toYamlString: String
 }
 
-case class HttpEvent(
-                      method: String = "get",
-                      path: String
-                    ) extends Event {
-  override def toYaml: String = ???
-}
-
+case class HttpEvent(method: String = "get",
+                     path: String)
 
 //!@
 //import java.io.File
