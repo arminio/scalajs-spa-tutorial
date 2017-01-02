@@ -133,6 +133,7 @@ class ApiService extends Api {
     println(s"service was added: $newItem")
   }
 
+  println()
   Thread.sleep(2000)
 
   services

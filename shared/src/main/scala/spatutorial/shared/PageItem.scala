@@ -46,12 +46,16 @@ case class Function(
                    ) //extends Kind[Function]
 
 //!@doco https://github.com/ochrons/boopickle#automatic-generation-of-hierarchy-picklers
-sealed trait Event
+sealed trait Event {
+  def toYaml: String
+}
 
 case class HttpEvent(
                       method: String = "get",
                       path: String
-                    ) extends Event
+                    ) extends Event {
+  override def toYaml: String = ???
+}
 
 
 //!@
