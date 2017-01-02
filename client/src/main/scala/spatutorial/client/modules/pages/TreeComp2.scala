@@ -135,9 +135,6 @@ object Tree2 {
 
             ReactTreeView(
               modelProxy,
-//              pimpedRoot = modelProxy.value,
-
-              //          root = data,
               openByDefault = true,
               onItemSelect = itemSelectPF(p, _: String, _: String, _: Int),
               showSearchBox = true

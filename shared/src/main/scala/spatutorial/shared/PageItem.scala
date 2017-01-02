@@ -33,7 +33,7 @@ case class Service(
                     provider: Provider,
                     `package`: String, // eg: path to jar
                     functions: Seq[Function] = Nil
-                  ) extends Kind[Service]
+                  ) //extends Kind[Service]
 
 
 case class Provider(name: String = "aws", runtime: String = "java8")
@@ -42,8 +42,8 @@ case class Function(
                      id: Identifier,
                      name: String,
                      handler: String,
-                     events: Seq[Event]
-                   ) extends Kind[Function]
+                     events: Seq[HttpEvent]
+                   ) //extends Kind[Function]
 
 trait Event
 

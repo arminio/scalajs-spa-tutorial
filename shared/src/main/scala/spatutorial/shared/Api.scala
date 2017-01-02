@@ -24,6 +24,8 @@ trait Api {
   // delete a PageXX
   def deletePageXX(itemId: String): Seq[PageXXItem]
 
+  def getAllServices(): Seq[Service]
+  def saveService(service:Service) : Seq[Service]
 
 //!@  def getPage(pageIdentifier: PageIdentifier): Page
 }

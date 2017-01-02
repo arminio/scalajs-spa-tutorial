@@ -1,11 +1,13 @@
 package spatutorial.client.services
 
+import autowire._
 import diode._
 import diode.data._
 import diode.react.ReactConnector
 import japgolly.scalajs.react.vdom.prefix_<^._
 import spatutorial.client.components.{GlobalStyles, IdProvider, TreeItem}
 //import japgolly.scalajs.react.extra.router.Action
+import boopickle.Default._
 import spatutorial.shared._
 
 import scalacss.ScalaCssReact._
@@ -46,10 +48,6 @@ class TreeNodeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(
       //!@println(s"handling tree node selection: $selectedItemId")
       updated(Identifier(selectedItemId))
   }
-}
-
-case class Foo(name:String, is: Int*) {
-  def apply(i : Int): Foo = new Foo(s"$i")
 }
 
 
@@ -110,7 +108,8 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
     case LoadServices =>
       //!@println("load services")
-      effectOnly(Effect(Future.successful(testServices).map(UpdateAllServices)))
+//      effectOnly(Effect(Future.successful(testServices).map(UpdateAllServices)))
+      effectOnly(Effect(AjaxClient[Api].getAllServices().call().map(UpdateAllServices)))
 
     case UpdateAllServices(seqOfServices: Seq[Service]) =>
       //!@println(s"UpdateAllServicesL $seqOfServices")
@@ -118,11 +117,11 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
       updated(Ready(services), Effect(Future.successful(RefreshTree(convertToTreeItems(services)))))
 
     case SaveService(service) =>
-      //!@println(s"handling save service: $service")
-      val services: Pot[Services] = value.map(_.updated(service))
-      //!@println(s"New services: $services")
-      updated(services, Effect(Future.successful(RefreshTree(convertToTreeItems(services.getOrElse(throw new RuntimeException("Services are not ready")))))))
-      //      updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteTodo(item.id).call().map(UpdateAllTodos)))
+      println(s"handling save service: $service")
+
+//      updated(value.map(_.updated(service)), Effect(Future.successful(RefreshTree(convertToTreeItems(value.map(_.updated(service)).getOrElse(throw new RuntimeException("Services are not ready")))))))
+      updated(value.map(_.updated(service)), Effect(AjaxClient[Api].saveService(service).call().map(UpdateAllServices)))
+//    updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteTodo(item.id).call().map(UpdateAllTodos)))
 
     //      updated(services,Effect(Future.successful(RefreshTree(convertToTreeItems(services)))) )
 
