@@ -69,12 +69,12 @@ object SPAMain extends js.JSApp {
         staticRoute("#functions", FunctionsLoc)
           ~> renderR(ctl => functionsWrapper((props: ModelProxy[Seq[Function]]) => ListFunctionsComp(ctl, props))) // <--!@ use servicesWrapper
         |
-        dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc])
-          ~> dynRenderR { (loc, ctl) =>
-
-          servicesWrapper(props => ServiceComp(ctl, Identifier(loc.asInstanceOf[ServiceLoc].id), props))
-        }
-        |
+//        dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc])
+//          ~> dynRenderR { (loc, ctl) =>
+//
+//          servicesWrapper(props => ServiceComp2(ctl, Identifier(loc.asInstanceOf[ServiceLoc].id), props))
+//        }
+//        |
         dynamicRouteCT("#function" / string(idPattern).caseClass[FunctionLoc])
           ~> dynRender(x => <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!"))
       ).notFound(redirectToPage(ErrorLoc)(Redirect.Push))

@@ -112,9 +112,6 @@ object Tree2 {
            |Its depth:  $depth <br>
         """.stripMargin
 
-
-
-
       Callback(dom.document.getElementById("treeviewcontent").innerHTML = content)
       //!@ dispatch? loc?
     }
@@ -130,7 +127,6 @@ object Tree2 {
 
         <.div(
           <.h3("Demo"),
-
           s.treeRootWrapper((modelProxy: ModelProxy[TreeItem]) => {
 
             ReactTreeView(
@@ -141,9 +137,8 @@ object Tree2 {
             )
 
           }
-,
-          <.strong(^.id := "treeviewcontent")
-        )                   )
+        ) ,
+          <.strong(^.id := "treeviewcontent")  )
       )
 
 

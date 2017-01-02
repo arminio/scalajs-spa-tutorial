@@ -42,10 +42,11 @@ case class Function(
                      id: Identifier,
                      name: String,
                      handler: String,
-                     events: Seq[HttpEvent]
+                     events: Seq[Event]
                    ) //extends Kind[Function]
 
-trait Event
+//!@doco https://github.com/ochrons/boopickle#automatic-generation-of-hierarchy-picklers
+sealed trait Event
 
 case class HttpEvent(
                       method: String = "get",
