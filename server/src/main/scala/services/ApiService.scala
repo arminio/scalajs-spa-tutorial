@@ -23,7 +23,7 @@ class ApiService extends Api {
       serviceName = "service 1",
       provider = Provider("aws", "java10000"),
       `package` = "sort me out",
-      functions = Seq(
+      functions = Map( "function-of-chicken" -> Function(Identifier.empty, "the name goes here", "the handler egg", Nil)
         //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
       )
     )

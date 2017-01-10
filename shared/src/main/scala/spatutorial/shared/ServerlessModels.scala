@@ -2,6 +2,8 @@ package spatutorial.shared
 
 import java.util.UUID
 
+import scala.beans.BeanProperty
+
 
 case class Identifier(user: String,
                       profile: String,
@@ -27,21 +29,19 @@ case object Identifier {
 }
 
 
-case class Service(
-                    id: Identifier,
-                    serviceName: String,
+case class Service(id: Identifier,
+                   serviceName: String,
                     provider: Provider,
                     `package`: String, // eg: path to jar
-                    functions: Seq[Function] = Nil
-                  )
+                    functions: Map[String, Function] = Map.empty)
 
 
 case class Provider(name: String = "aws", runtime: String = "java8")
 
-case class Function(id: Identifier,
-                    name: String,
-                    handler: String,
-                    httpEvents: Seq[HttpEvent])
+case class Function(@BeanProperty id: Identifier,
+                    @BeanProperty name: String,
+                    @BeanProperty handler: String,
+                    @BeanProperty httpEvents: Seq[HttpEvent])
 
 //!@doco https://github.com/ochrons/boopickle#automatic-generation-of-hierarchy-picklers
 sealed trait Event {

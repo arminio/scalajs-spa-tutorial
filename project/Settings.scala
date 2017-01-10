@@ -59,6 +59,7 @@ object Settings {
     "com.amazonaws" % "aws-java-sdk" % "1.11.73",
 //    "org.yaml" % "snakeyaml" % "1.17",
     "net.jcazevedo" %% "moultingyaml" % "0.4.0",
+    "com.lihaoyi" %% "ammonite-ops" % "0.8.1",
     "com.lihaoyi" %% "utest" % versions.uTest % Test
   ))
 

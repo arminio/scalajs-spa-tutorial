@@ -6,6 +6,8 @@ import diode.data._
 import diode.react.ReactConnector
 import japgolly.scalajs.react.vdom.prefix_<^._
 import spatutorial.client.components.{GlobalStyles, IdProvider, TreeItem}
+
+import scala.collection.immutable.Iterable
 //import japgolly.scalajs.react.extra.router.Action
 import boopickle.Default._
 import spatutorial.shared._
@@ -63,39 +65,44 @@ class TreeHandler[M](modelRW: ModelRW[M, TreeItem]) extends ActionHandler(modelR
 
 class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandler(modelRW) {
 
-  val testServices = Seq(
-    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid1"),
-      serviceName = "service 1",
-      provider = Provider("aws", "java8"),
-      `package` = "target/scala-2.11/hello.jar",
-      functions = Seq(
-//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
-      )
-    )
-//    ,
-//    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
-//      serviceName = "service 2",
+//  val testServices = Seq(
+//    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid1"),
+//      serviceName = "service 1",
 //      provider = Provider("aws", "java8"),
 //      `package` = "target/scala-2.11/hello.jar",
 //      functions = Seq(
-//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
-//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
-//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
-//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
-//        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
 //      )
 //    )
-  )
+////    ,
+////    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
+////      serviceName = "service 2",
+////      provider = Provider("aws", "java8"),
+////      `package` = "target/scala-2.11/hello.jar",
+////      functions = Seq(
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
+////        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
+////      )
+////    )
+//  )
 
   @inline private def bss = GlobalStyles.bootstrapStyles
 
 
   def convertToTreeItems(services: Services) : TreeItem = {
-    def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
+
+    def getChildren(s: Service): Iterable[TreeItem] = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f._2.id.str, f._1), f._2.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
 //    def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
 
     println(s"=====> ${services}")
-    TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
+    TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map { s =>
+      val children = getChildren(s).toList
+      TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), children: _*)
+    }:_*)
+
   }
 //  def convertToTreeItems(services: Services) : TreeItem = {
 //    def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?

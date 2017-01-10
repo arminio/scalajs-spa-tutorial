@@ -13,7 +13,7 @@ import spatutorial.shared._
 
 object ListFunctionsComp {
 
-  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[Seq[Function]])
+  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[Map[String, Function]])
 
   case class State()
 
@@ -45,7 +45,7 @@ object ListFunctionsComp {
           <.ul()(
             for ((function, idx) <- p.proxy.value.zipWithIndex) yield {
               <.li(^.key := s"$idx",
-                p.router.link(FunctionLoc(function.id.str))(function.toString)
+                p.router.link(FunctionLoc(function._2.id.str))(function.toString)
               )
             }
           )
@@ -62,7 +62,7 @@ object ListFunctionsComp {
     .build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(router: RouterCtl[Loc], proxy: ModelProxy[Seq[Function]]) = component(Props(router, proxy))
+  def apply(router: RouterCtl[Loc], proxy: ModelProxy[Map[String, Function]]) = component(Props(router, proxy))
 }
 
 

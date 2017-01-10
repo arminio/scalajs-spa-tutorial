@@ -1,6 +1,8 @@
 package services
 
 import net.jcazevedo.moultingyaml.DefaultYamlProtocol
+import org.yaml.snakeyaml.Yaml
+import spatutorial.shared.{Function, Identifier}
 
 /**
   * Created by armin.
@@ -33,4 +35,6 @@ object SnakeYamlSandbox extends App {
 
   println(palette.toYaml.prettyPrint)
   println("-" * 100)
+
+
 }

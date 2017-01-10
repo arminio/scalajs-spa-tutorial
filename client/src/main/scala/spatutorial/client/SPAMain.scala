@@ -46,13 +46,14 @@ object SPAMain extends js.JSApp {
     import dsl._
     val servicesWrapper = SPACircuit.connect(_.services)
     val rootWrapper = SPACircuit.connect(rootModel => rootModel)
-    val functionsWrapper = SPACircuit.connect(_.services.get.services.flatMap(service => service.functions))
+    val functionsWrapper = SPACircuit.connect(_.services.get.services.flatMap(service => service.functions).toMap)
 
     // wrap/connect components to the circuit
     val idPattern = "[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
+
     (
       staticRoute("#error", ErrorLoc)
-        ~> render(<.h1("Errored!!!!"))
+        ~> render(<.h1("Errored!!!!")) // <- action: https://github.com/japgolly/scalajs-react/blob/master/doc/ROUTER.md#actions
         |
 //        staticRoute("#tree", TreeLoc)
 //          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp(ctl, props)))
@@ -67,7 +68,7 @@ object SPAMain extends js.JSApp {
           ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))
         |
         staticRoute("#functions", FunctionsLoc)
-          ~> renderR(ctl => functionsWrapper((props: ModelProxy[Seq[Function]]) => ListFunctionsComp(ctl, props))) // <--!@ use servicesWrapper
+          ~> renderR(ctl => functionsWrapper((props: ModelProxy[Map[String, Function]]) => ListFunctionsComp(ctl, props))) // <--!@ use servicesWrapper
         |
 //        dynamicRouteCT("#service" / string(idPattern).caseClass[ServiceLoc])
 //          ~> dynRenderR { (loc, ctl) =>
@@ -76,7 +77,10 @@ object SPAMain extends js.JSApp {
 //        }
 //        |
         dynamicRouteCT("#function" / string(idPattern).caseClass[FunctionLoc])
-          ~> dynRender(x => <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!"))
+          ~> dynRender { x: Loc =>
+
+          <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!")
+        }
       ).notFound(redirectToPage(ErrorLoc)(Redirect.Push))
 
   }.renderWith(layout)

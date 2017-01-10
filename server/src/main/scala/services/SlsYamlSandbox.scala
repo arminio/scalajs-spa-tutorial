@@ -33,6 +33,36 @@ object SlsYamlSandbox extends App {
                |""".stripMargin.parseYaml
 //  val palette = yaml.convertTo[Palette]
 
+//  case class Foo(name:String, prop1: String, prop2: Int)
+//  object MyYamlProtocol extends DefaultYamlProtocol {
+//    implicit object ColorYamlFormat extends YamlFormat[Foo] {
+//      def write(c: Foo) =
+//        YamlArray(
+//          YamlString(c.name),
+//          YamlObject(
+//            (YamlString("prop1") -> YamlString(c.prop1)),
+//            (YamlString("prop2") -> YamlNumber(c.prop2)))
+//        )
+//
+//      def read(value: YamlValue) = value match {
+//        case YamlArray(
+//        Vector(
+//        YamlString(name),
+//        YamlString(p1: String),
+//        YamlNumber(p2))) =>
+//          new Foo(name, p1, p2.intValue())
+//        case _ => deserializationError("Foo expected")
+//      }
+//    }
+//  }
+
+
+
   println(new ApiService().services.toYaml.prettyPrint)
+//  import MyYamlProtocol._
+
+//  val yaml2 = new Foo("CadetBlue", "95", 158).toYaml
+////  val color = yaml2.convertTo[Foo]
+//  println(yaml2.prettyPrint)
   println("-" * 100)
 }

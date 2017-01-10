@@ -1,0 +1,176 @@
+{
+  "service": "myService",
+  "frameworkVersion": ">=1.0.0 <2.0.0",
+  "provider": {
+    "name": "aws",
+    "runtime": "nodejs4.3",
+    "stage": "dev",
+    "region": "us-east-1",
+    "profile": "production",
+    "memorySize": 512,
+    "timeout": 10,
+    "deploymentBucket": "com.serverless.${self:provider.region}.deploys",
+    "role": "arn:aws:iam::XXXXXX:role/role",
+    "environment": {
+      "serviceEnvVar": 123456789
+    },
+    "apiKeys": [
+      "myFirstKey",
+      "${opt:stage}-myFirstKey",
+      "${env:MY_API_KEY}"
+    ],
+    "stackTags": {
+      "key": "value"
+    },
+    "iamRoleStatements": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:ListBucket"
+        ],
+        "Resource": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:s3:::",
+              {
+                "Ref": "ServerlessDeploymentBucket"
+              }
+            ]
+          ]
+        }
+      }
+    ],
+    "stackPolicy": [
+      {
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "Update:*",
+        "Resource": "*"
+      },
+      {
+        "Effect": "Deny",
+        "Principal": "*",
+        "Action": [
+          "Update:Replace",
+          "Update:Delete"
+        ],
+        "Condition": {
+          "StringEquals": {
+            "ResourceType": [
+              "AWS::EC2::Instance"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "functions": {
+    "usersCreate": {
+      "handler": "users.creatmonitoring-1e",
+      "memorySize": 512,
+      "timeout": 10,
+      "role": "arn:aws:iam::XXXXXX:role/role",
+      "environment": {
+        "functionEnvVar": 12345678
+      },
+      "events": [
+        {
+          "http": {
+            "path": "users/create",
+            "method": "get",
+            "cors": true,
+            "private": true,
+            "authorizer": {
+              "name": "authorizerFunc",
+              "arn": "xxx:xxx:Lambda-Name",
+              "resultTtlInSeconds": 0,
+              "identitySource": "method.request.header.Authorization",
+              "identityValidationExpression": "someRegex"
+            }
+          }
+        },
+        {
+          "s3": {
+            "bucket": "photos",
+            "event": "s3:ObjectCreated:*",
+            "rules": [
+              {
+                "prefix": "uploads/"
+              },
+              {
+                "suffix": ".jpg"
+              }
+            ]
+          }
+        },
+        {
+          "schedule": {
+            "rate": "rate(10 minutes)",
+            "enabled": false,
+            "input": {
+              "key1": "value1",
+              "key2": "value2",
+              "stageParams": {
+                "stage": "dev"
+              }
+            }
+          }
+        },
+        {
+          "sns": {
+            "topicName": "aggregate",
+            "displayName": "Data aggregation pipeline"
+          }
+        },
+        {
+          "stream": {
+            "arn": "arn:aws:kinesis:region:XXXXXX:stream/foo",
+            "batchSize": 100,
+            "startingPosition": "LATEST",
+            "enabled": false
+          }
+        },
+        "alexaSkill"
+      ]
+    }
+  },
+  "resources": {
+    "Resources": {
+      "usersTable": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "usersTable",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "email",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            {
+              "AttributeName": "email",
+              "KeyType": "HASH"
+            }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 1,
+            "WriteCapacityUnits": 1
+          }
+        }
+      }
+    },
+    "Outputs": {
+      "UsersTableArn": {
+        "Description": "The ARN for the User's Table",
+        "Value": {
+          "Fn::GetAtt": [
+            "usersTable",
+            "Arn"
+          ]
+        },
+        "Export": "${self:service}:${opt:stage}:UsersTableArn"
+      }
+    }
+  }
+}
