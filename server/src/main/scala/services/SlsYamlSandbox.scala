@@ -57,8 +57,15 @@ object SlsYamlSandbox extends App {
 //  }
 
 
+  private val services = new ApiService().services
+//  for {
+//    s <- services
+//    (name,fn) <- s.functions
+//  } yield
 
-  println(new ApiService().services.toYaml.prettyPrint)
+  val newServices = services.map(_.functions.map{case (n, fn) => (n -> fn.copy(handler = "${variable-${demo-stage}}"))})
+//  println(services.toYaml.prettyPrint)
+  println(newServices.toYaml.prettyPrint)
 //  import MyYamlProtocol._
 
 //  val yaml2 = new Foo("CadetBlue", "95", 158).toYaml
