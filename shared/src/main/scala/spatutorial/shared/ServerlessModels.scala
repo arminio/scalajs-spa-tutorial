@@ -2,6 +2,7 @@ package spatutorial.shared
 
 import java.util.UUID
 
+
 import scala.beans.BeanProperty
 
 
@@ -37,6 +38,7 @@ case class Service(id: Identifier,
 
 
 case class Provider(name: String = "aws", runtime: String = "java8")
+
 
 case class Function(@BeanProperty id: Identifier,
                     @BeanProperty name: String,

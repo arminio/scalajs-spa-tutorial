@@ -31,6 +31,12 @@ object MainMenu {
       <.span("Services "), pageXXCount > 0 ?= <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, pageXXCount)
     )
   }
+  private def buildNewServiceMenu(props: Props): ReactElement = {
+
+    <.span(
+      <.span("New Service")
+    )
+  }
 
   def newIndex = {
   var index = 0
@@ -39,7 +45,8 @@ object MainMenu {
   }
 
   private val menuItems = Seq(
-    MenuItem(1, buildServiceMenu, Icon.dashboard, ServicesLoc)
+    MenuItem(1, buildServiceMenu, Icon.dashboard, ServicesLoc),
+    MenuItem(2, buildNewServiceMenu, Icon.dashboard, NewServiceLoc)
 //    MenuItem(1, _ => "Dashboard", Icon.dashboard, DashboardLoc),
 //    MenuItem(2, buildTodoMenu, Icon.check, TodoLoc),
 //    MenuItem(3, buildPageXXMenu, Icon.check, PageXXLoc)

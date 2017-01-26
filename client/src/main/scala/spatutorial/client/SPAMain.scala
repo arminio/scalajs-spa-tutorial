@@ -27,11 +27,14 @@ object SPAMain extends js.JSApp {
   sealed trait Loc
 
   case object ServicesLoc extends Loc
+  case object NewServiceLoc extends Loc
   case object FunctionsLoc extends Loc
   case object TreeLoc extends Loc
-  case object TreeLoc2 extends Loc
+//  case object Tree3Loc extends Loc
   case class ServiceLoc(id: String) extends Loc
   case class FunctionLoc(id: String) extends Loc
+  case class GodLoc(serviceId: Option[String], functionId: Option[String]) extends Loc
+
 
   case object ErrorLoc extends Loc
 //  case object DashboardLoc extends Loc
@@ -61,10 +64,14 @@ object SPAMain extends js.JSApp {
 //        staticRoute("#tree2", TreeLoc2) //!@ rename the url and Loc
 //          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp2(ctl, props, ServiceComp2(ctl, () => Identifier("FIXME", "FIXME", "FIXME"), props))))
 //        |
-        staticRoute("#tree2", TreeLoc2) //!@ rename the url and Loc
-          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp2(ctl, props, ServiceComp2(ctl, props))))
+        staticRoute("#tree2", TreeLoc) //!@ rename the url and Loc
+          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp2(ctl, props, ServiceComp(ctl, props))))
         |
+
         staticRoute("#services", ServicesLoc)
+          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))
+        |
+        staticRoute("#newservice", NewServiceLoc)
           ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))
         |
         staticRoute("#functions", FunctionsLoc)
@@ -81,6 +88,7 @@ object SPAMain extends js.JSApp {
 
           <.h1(s"Function ${x.asInstanceOf[FunctionLoc].id}!!!!")
         }
+
       ).notFound(redirectToPage(ErrorLoc)(Redirect.Push))
 
   }.renderWith(layout)

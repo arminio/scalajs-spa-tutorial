@@ -14,7 +14,7 @@ import spatutorial.shared._
 import scala.scalajs.js
 import scalacss.ScalaCssReact._
 
-object ServiceComp2 {
+object ServiceComp {
 
   @inline private def bss = GlobalStyles.bootstrapStyles
 
@@ -40,7 +40,7 @@ object ServiceComp2 {
           }).map { s =>
             //!@println(s"rendering ServiceDetailsComp2 selectedItemI: $s")
 
-            ServiceDetailsComp2(s, p.router, p.proxy)
+            ServiceDetailsComp(s, p.router, p.proxy)
           }
             //          services.services.find(s => s.id == p.serviceIdentifier).map(s => ServiceDetailsComp2(s, p.router, p.proxy))
             .fold(
@@ -70,7 +70,7 @@ object ServiceComp2 {
 
 }
 
-object ServiceDetailsComp2 {
+object ServiceDetailsComp {
 
 
   val component = ReactComponentB[Props]("ServiceDetailsComp")

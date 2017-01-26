@@ -137,7 +137,9 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
 
 
 // The base model of our application
-case class RootModel(services: Pot[Services], selectedItemId: Identifier, treeRoot: TreeItem = TreeItem(IdProvider.empty))
+case class RootModel(services: Pot[Services],
+                     selectedItemId: Identifier,
+                     treeRoot: TreeItem = TreeItem(IdProvider.empty))
 
 
 // Application circuit

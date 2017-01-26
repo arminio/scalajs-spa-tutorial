@@ -38,6 +38,7 @@ object Settings {
     val chartjs = "2.1.3"
 
     val scalajsScripts = "1.0.0"
+    val monocleVersion = "1.3.2"
   }
 
   /**
@@ -47,7 +48,12 @@ object Settings {
   val sharedDependencies = Def.setting(Seq(
     "com.lihaoyi" %%% "autowire" % versions.autowire,
     "me.chrons" %%% "boopickle" % versions.booPickle,
-    "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+    "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
+    "com.chuusai" %%% "shapeless" % "2.2.5" ,
+    "com.softwaremill.quicklens" %%% "quicklens" % "1.4.8",
+    "com.github.julien-truffaut" %%%  "monocle-core"  % versions.monocleVersion,
+    "com.github.julien-truffaut" %%%  "monocle-macro" % versions.monocleVersion,
+    "com.github.julien-truffaut" %%%  "monocle-law"   % versions.monocleVersion % "test"
   ))
 
   /** Dependencies only used by the JVM project */
@@ -72,6 +78,14 @@ object Settings {
     "me.chrons" %%% "diode-react" % versions.diode,
     "org.scala-js" %%% "scalajs-dom" % versions.scalaDom,
     "com.lihaoyi" %%% "utest" % versions.uTest % Test
+//    ,
+//    "com.github.japgolly.fork.monocle" %%% "monocle-core" % "1.2.0",
+//
+//      "com.github.japgolly.fork.monocle" %%% "monocle-generic" % "1.2.0",
+//
+//  "com.github.japgolly.fork.monocle" %%% "monocle-state" % "1.2.0",
+//
+//  "com.github.japgolly.fork.monocle" %%% "monocle-macro" % "1.2.0"
   ))
 
   /** Dependencies for external JS libs that are bundled into a single .js file according to dependency order */

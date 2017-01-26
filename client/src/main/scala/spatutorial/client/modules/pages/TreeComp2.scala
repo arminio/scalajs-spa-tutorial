@@ -126,7 +126,7 @@ object Tree2 {
       <.div(
 
         <.div(
-          <.h3("Demo"),
+          <.h3("Demo"), <.button("New Service"),
           s.treeRootWrapper((modelProxy: ModelProxy[TreeItem]) => {
 
             ReactTreeView(

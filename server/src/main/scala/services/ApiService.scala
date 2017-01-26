@@ -27,19 +27,19 @@ class ApiService extends Api {
         //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
       )
     )
-    //    ,
-    //    Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
-    //      serviceName = "service 2",
-    //      provider = Provider("aws", "java8"),
-    //      `package` = "target/scala-2.11/hello.jar",
-    //      functions = Seq(
-    //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
-    //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
-    //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
-    //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
-    //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
-    //      )
-    //    )
+        ,
+        Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
+          serviceName = "service 2",
+          provider = Provider("aws", "java8"),
+          `package` = "target/scala-2.11/hello.jar",
+          functions = Map(
+            "Func 11" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
+            "Func 12" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
+            "Func 13" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
+            "Func 14" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
+            "Func 15" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
+          )
+        )
   )
 
 

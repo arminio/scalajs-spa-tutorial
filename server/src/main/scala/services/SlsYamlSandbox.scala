@@ -1,12 +1,14 @@
 package services
 
+import monocle.function.FilterIndexFunctions
+import monocle.syntax.ApplySyntax
 import net.jcazevedo.moultingyaml.DefaultYamlProtocol
 import spatutorial.shared._
 
 /**
   * Created by armin.
   */
-object SlsYamlSandbox extends App {
+object SlsYamlSandbox extends App with ApplySyntax with FilterIndexFunctions {
 
   object PaletteYamlProtocol extends DefaultYamlProtocol {
     implicit val identifierFormat = yamlFormat4(Identifier.apply)
@@ -57,15 +59,33 @@ object SlsYamlSandbox extends App {
 //  }
 
 
-  private val services = new ApiService().services
-//  for {
-//    s <- services
-//    (name,fn) <- s.functions
-//  } yield
+//  import monocle.Lens
+//  import monocle.macros.GenLens
+////  import monocle.syntax.ApplyTraversalOps._
+//
+//  val functions: Lens[Service, Iterable[Function]] = GenLens[Service](_.functions.values)
+//
+//  val funcHandler = GenLens[Function](_.handler)
+//  val funcId = GenLens[Function](_.id)
+////  val address   : Lens[Ser , Address] = GenLens[Company](_.address)
+//  val street    : Lens[Address , Street]  = GenLens[Address](_.street)
+//  val streetName: Lens[Street  , String]  = GenLens[Street](_.name)
 
-  val newServices = services.map(_.functions.map{case (n, fn) => (n -> fn.copy(handler = "${variable-${demo-stage}}"))})
-//  println(services.toYaml.prettyPrint)
-  println(newServices.toYaml.prettyPrint)
+  case class Street(name: String)
+  case class Address(street: Option[Street])
+  case class Person(addresses: List[Address])
+
+
+  val person = Person(List(
+    Address(Some(Street("1 Functional Rd."))),
+    Address(Some(Street("2 Imperative Dr.")))
+  ))
+
+
+
+//  val newServices = services.map(_.functions.map{case (n, fn) => (n -> fn.copy(handler = "${variable-${demo-stage}}"))})
+////  println(services.toYaml.prettyPrint)
+//  println(newServices.toYaml.prettyPrint)
 //  import MyYamlProtocol._
 
 //  val yaml2 = new Foo("CadetBlue", "95", 158).toYaml
