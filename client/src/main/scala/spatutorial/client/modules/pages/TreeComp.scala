@@ -16,7 +16,7 @@ import spatutorial.client.services._
 import scala.scalajs.js
 import scalacss.ScalaCssReact._
 
-object TreeComp2 {
+object TreeComp {
 
   case class Props(router: RouterCtl[Loc], proxy: ModelProxy[RootModel], children: ReactNode*)
 
@@ -37,7 +37,7 @@ object TreeComp2 {
             <.div(^.className := "row",
 //              do like this (from Dashboard code of SPA):
 //          .initialState_P(props => State(props.proxy.connect((m: Pot[String]) => m)))
-              <.div(^.className := "pull-left col-sm-3", s.treeRootWrapper(modelProxy => Tree2(props.router, modelProxy))),
+              <.div(^.className := "pull-left col-sm-3", s.treeRootWrapper(modelProxy => Tree(props.router, modelProxy))),
               <.div(^.className := "pull-left col-sm-9", props.children)
             )
           )
@@ -66,7 +66,7 @@ object TreeComp2 {
 ////////////// TREE
 ////////////// TREE
 ////////////// TREE
-object Tree2 {
+object Tree {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
   case class Props(router: RouterCtl[Loc], proxy: ModelProxy[TreeItem])

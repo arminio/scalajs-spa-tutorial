@@ -25,7 +25,7 @@ class Application @Inject() (implicit val config: Configuration, env: Environmen
 
   def autowireApi(path: String) = Action.async(parse.raw) {
     implicit request =>
-      Thread.sleep(10000)
+//      Thread.sleep(10000)
       //!@println(s"Request path: $path")
 
       // get the request body as ByteString

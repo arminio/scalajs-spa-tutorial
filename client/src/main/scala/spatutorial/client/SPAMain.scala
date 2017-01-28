@@ -30,7 +30,7 @@ object SPAMain extends js.JSApp {
   case object NewServiceLoc extends Loc
   case object FunctionsLoc extends Loc
   case object TreeLoc extends Loc
-//  case object Tree3Loc extends Loc
+  case object Tree3Loc extends Loc
   case class ServiceLoc(id: String) extends Loc
   case class FunctionLoc(id: String) extends Loc
   case class GodLoc(serviceId: Option[String], functionId: Option[String]) extends Loc
@@ -65,9 +65,9 @@ object SPAMain extends js.JSApp {
 //          ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => TreeComp2(ctl, props, ServiceComp2(ctl, () => Identifier("FIXME", "FIXME", "FIXME"), props))))
 //        |
         staticRoute("#tree2", TreeLoc) //!@ rename the url and Loc
-          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp2(ctl, props, ServiceComp(ctl, props))))
+          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp(ctl, props, ServiceComp(ctl, props))))
         |
-
+        
         staticRoute("#services", ServicesLoc)
           ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))
         |
@@ -95,6 +95,7 @@ object SPAMain extends js.JSApp {
 
 
   val serviceCounterWrapper = SPACircuit.connect(model => (model.services.map(_.services.size)).toOption)
+  val treeRootWrapper = SPACircuit.connect(_.treeRoot)
 
   // base layout for all pages
   def layout(c: RouterCtl[Loc], r: Resolution[Loc]) = {
@@ -112,7 +113,19 @@ object SPAMain extends js.JSApp {
       ),
       // currently active module is shown in this container
 //      <.div(^.className := "container", r.render())
-      <.div( r.render())
+
+      <.div(
+        <.div(^.className := "container-fluid",
+          <.div(^.className := "row",
+            //              do like this (from Dashboard code of SPA):
+            //          .initialState_P(props => State(props.proxy.connect((m: Pot[String]) => m)))
+            <.div(^.className := "pull-left col-sm-3", treeRootWrapper(modelProxy => Tree(c, modelProxy))),
+            <.div(^.className := "pull-left col-sm-9", r.render())
+          )
+        )
+//        ,
+//        r.render()
+      )
     )
   }
 
