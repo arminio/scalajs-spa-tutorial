@@ -22,7 +22,7 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 case object LoadServices extends Action   //!@ should Load take a Loc so it can reload on any entry?
 case class UpdateAllServices(services: Seq[Service]) extends Action
 case class SaveService(service: Service) extends Action
-case class LocTreeItemSelected(itemId : String) extends Action
+case class TreeItemSelected(itemId : String) extends Action
 case class RefreshTree(treeItem: TreeItem) extends Action
 
 
@@ -46,7 +46,7 @@ case class Services(services: Seq[Service]) {
 class TreeNodeHandler[M](modelRW: ModelRW[M, Identifier]) extends ActionHandler(modelRW) {
   override protected def handle: PartialFunction[Any, ActionResult[M]] = {
 
-    case LocTreeItemSelected(selectedItemId : String) =>
+    case TreeItemSelected(selectedItemId : String) =>
       //!@println(s"handling tree node selection: $selectedItemId")
       updated(Identifier(selectedItemId))
   }
@@ -98,7 +98,7 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
 //    def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
 
     println(s"=====> ${services}")
-    TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map { s =>
+    TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"),  Identifier.services.str, "Services"), services.services.map { s =>
       val children = getChildren(s).toList
       TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), children: _*)
     }:_*)
@@ -145,7 +145,7 @@ case class RootModel(services: Pot[Services],
 // Application circuit
 object SPACircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
   // initial application model
-  override protected def initialModel = RootModel(Empty, Identifier("NotSet","NotSet","NotSet"))
+  override protected def initialModel = RootModel(Empty, Identifier("NotSet", "NotSet", "NotSet"))
   // combine all handlers into one
   override protected val actionHandler = composeHandlers(
 

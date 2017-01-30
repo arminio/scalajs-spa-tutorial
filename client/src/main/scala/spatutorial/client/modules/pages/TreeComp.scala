@@ -8,10 +8,11 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^.{<, TagMod, _}
 import org.scalajs.dom
-import spatutorial.client.SPAMain.{FunctionsLoc, Loc, ServiceLoc}
+import spatutorial.client.SPAMain._
 import spatutorial.client.components.Bootstrap._
 import spatutorial.client.components.{GlobalStyles, IdProvider, ReactTreeView, TreeItem}
 import spatutorial.client.services._
+import spatutorial.shared.Identifier
 
 import scala.scalajs.js
 import scalacss.ScalaCssReact._
@@ -81,28 +82,22 @@ object Tree {
 
   class Backend($: BackendScope[Props, State]) {
 
-//    //!@ remove this as TreeItems are given to us now
-//    def initData = {
-//
-//      $.modState { state =>
-//
-//        state.copy(rootTreeItem = convertToTreeItems(state.services))
-//      }
-//    }
 
-//    //!@ remove this as TreeItems are given to us now
-//    def convertToTreeItems(services: Services) : TreeItem = {
-//      def getChildren(s: Service) = s.functions.map(f => TreeItem(IdProvider(<.button(bss.buttonXS, bss.labelAsBadge, ^.id := f.id.str, f.name), f.id.str, searchString = s.serviceName + f.toString))) //!@ can this be generalized?
-//
-//      //!@println(s"=====> ${services}")
-//      TreeItem(IdProvider(<.button (bss.buttonPrimary, "Services"), "ROOT", "Services"), services.services.map(s => TreeItem(IdProvider(<.button(bss.buttonXS, ^.id := s.id.str, s.serviceName), s.id.str, searchString = s.toString), getChildren(s):_*)):_*)
-//    }
+    def itemSelectPF(p:Props, itemIdentifier: String, parent: String, depth: Int): Callback = {
 
-    def itemSelectPF(p:Props, item: String, parent: String, depth: Int): Callback = {
-//!@? this should result in rendering the selected item on the right:
-      //!@println(s"tree item selected and selected id update trigger: $item")
-      p.proxy.dispatchCB(LocTreeItemSelected(item)) >>
-      itemSelectF(item,parent,depth)
+
+      println(s"item:${Identifier(itemIdentifier)}")
+            js.debugger()
+
+//      p.proxy.dispatchCB(TreeItemSelected(itemIdentifier)) >>
+      val location: Loc = Identifier(itemIdentifier) match {
+        case Identifier("SERVICE",_, _, _) => ServiceLoc(s"#$itemIdentifier")
+        case Identifier("FUNCTION",_, _, _) => FunctionLoc(s"#$itemIdentifier")
+        case Identifier("SERVICES",_, _, _) => ServicesLoc
+        case _ => TreeLoc
+      }
+        p.router.set(location) >>
+      itemSelectF(itemIdentifier,parent,depth)
     }
 
     def itemSelectF(item: String, parent: String, depth: Int): Callback = {

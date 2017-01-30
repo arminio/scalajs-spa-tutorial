@@ -45,7 +45,7 @@ object MainMenu {
   }
 
   private val menuItems = Seq(
-    MenuItem(1, buildServiceMenu, Icon.dashboard, ServicesLoc),
+    MenuItem(1, buildServiceMenu, Icon.dashboard, TreeLoc),
     MenuItem(2, buildNewServiceMenu, Icon.dashboard, NewServiceLoc)
 //    MenuItem(1, _ => "Dashboard", Icon.dashboard, DashboardLoc),
 //    MenuItem(2, buildTodoMenu, Icon.check, TodoLoc),

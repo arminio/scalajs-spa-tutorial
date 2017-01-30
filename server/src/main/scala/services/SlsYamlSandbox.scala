@@ -11,7 +11,7 @@ import spatutorial.shared._
 object SlsYamlSandbox extends App with ApplySyntax with FilterIndexFunctions {
 
   object PaletteYamlProtocol extends DefaultYamlProtocol {
-    implicit val identifierFormat = yamlFormat4(Identifier.apply)
+    implicit val identifierFormat = yamlFormat4((user: String, profile: String, kind: String, uuid: String) => Identifier.apply(kind, user, profile, uuid))
 //    implicit val eventFormat = yamlFormat0(spatutorial.shared.Event)
     implicit val httpEventFormat = yamlFormat2(HttpEvent)
     implicit val functionFormat = yamlFormat4(Function)

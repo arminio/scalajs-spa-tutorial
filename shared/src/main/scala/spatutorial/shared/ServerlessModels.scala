@@ -6,24 +6,22 @@ import java.util.UUID
 import scala.beans.BeanProperty
 
 
-case class Identifier(user: String,
-                      profile: String,
-                      kind: String,
-                      uuid: String = UUID.randomUUID().toString.replaceAll("-", "")) {
+case class Identifier(kind: String, user: String, profile: String, uuid: String = UUID.randomUUID().toString.replaceAll("-", "")) {
 
   def str = {
-    s"$user%$profile%$kind%$uuid".replaceAll("%", Identifier.separator) //!@ refactor this (list.mkstring("-"))
+    s"$kind%$user%$profile%$uuid".replaceAll("%", Identifier.separator) //!@ refactor this (list.mkstring("-"))
   }
 }
 
 case object Identifier {
-  val empty = Identifier("no-user", "no-profile", "no-kind", "no-uuid")
+  val empty = Identifier("nokind", "nouser", "noprofile", "nouuid")
+  val services = Identifier("SERVICES", "a", "a", "a")
 
   val separator = "-"
 
   def apply(id: String): Identifier = {
     id.split(separator) match {
-      case Array(u, p, k, uid) => Identifier(u, p, k, uid)
+      case Array(k , u, p, uid) => Identifier(k, u, p, uid)
       case _ => throw new RuntimeException(s"Invalid identifier $id")
     }
   }

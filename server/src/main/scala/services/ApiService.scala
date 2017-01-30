@@ -19,25 +19,25 @@ class ApiService extends Api {
   )
   
   var services =   Seq(
-    Service(id = Identifier("user1", "dev",  "SERVICE from server", "Suuid1"),
+    Service(id = Identifier("SERVICE", "user1", "dev", "Suuid1"),
       serviceName = "service 1",
       provider = Provider("aws", "java10000"),
       `package` = "sort me out",
-      functions = Map( "function-of-chicken" -> Function(Identifier.empty, "the name goes here", "the handler egg", Nil)
+      functions = Map( "function-of-chicken" -> Function(Identifier("FUNCTION", "user1", "dev", "Fuuid0000"), "the name goes here", "the handler egg", Nil)
         //        Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid1"),"function 1", "handler 1", Nil)
       )
     )
         ,
-        Service(id = Identifier("user1", "dev",  "SERVICE", "Suuid2"),
+        Service(id = Identifier("SERVICE", "user1", "dev", "Suuid2"),
           serviceName = "service 2",
           provider = Provider("aws", "java8"),
           `package` = "target/scala-2.11/hello.jar",
           functions = Map(
-            "Func 11" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid0"),"armin function", "handler 1", Nil),
-            "Func 12" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid2"),"aydin function 2", "handler 1", Nil),
-            "Func 13" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid3"),"naz function 3", "handler 1", Nil),
-            "Func 14" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid4"),"Lara function 4", "handler 1", Nil),
-            "Func 15" -> Function(Identifier("user1", "dev",  "FUNCTION", "Fuuid5"),"Lara function 5", "handler 1", Nil)
+            "Func 11" -> Function(Identifier("FUNCTION", "user1", "dev", "Fuuid0"),"armin function", "handler 1", Nil),
+            "Func 12" -> Function(Identifier("FUNCTION", "user1", "dev", "Fuuid2"),"aydin function 2", "handler 1", Nil),
+            "Func 13" -> Function(Identifier("FUNCTION", "user1", "dev", "Fuuid3"),"naz function 3", "handler 1", Nil),
+            "Func 14" -> Function(Identifier("FUNCTION", "user1", "dev", "Fuuid4"),"Lara function 4", "handler 1", Nil),
+            "Func 15" -> Function(Identifier("FUNCTION", "user1", "dev", "Fuuid5"),"Lara function 5", "handler 1", Nil)
           )
         )
   )

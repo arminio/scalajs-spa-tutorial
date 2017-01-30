@@ -6,13 +6,13 @@ class IdentifierSpec extends FunSpec with Matchers {
 
   describe("identifier") {
     it("should construct correctly using the default constructor") {
-      val id = Identifier("user1", "profile1", "FUNCTION", "uuid123")
+      val id = Identifier("FUNCTION", "user1", "profile1", "uuid123")
 
-      id.str shouldBe("user1%profile1%FUNCTION%uuid123")
+      id.str shouldBe("FUNCTION-user1-profile1-uuid123")
     }
 
     it("should construct correctly using the apply") {
-      Identifier("user1", "profile1", "FUNCTION", "uuid123") shouldBe Identifier("user1%profile1%FUNCTION%uuid123")
+      Identifier("FUNCTION", "user1", "profile1", "uuid123") shouldBe Identifier("FUNCTION-user1-profile1-uuid123")
     }
   }
 

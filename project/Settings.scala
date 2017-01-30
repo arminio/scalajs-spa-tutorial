@@ -23,11 +23,12 @@ object Settings {
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
   object versions {
     val scala = "2.11.8"
+//    val scala = "2.12.1"
     val scalaDom = "0.9.1"
     val scalajsReact = "0.11.3"
-    val scalaCSS = "0.5.0"
+    val scalaCSS = "0.5.1"
     val log4js = "1.4.10"
-    val autowire = "0.2.5"
+    val autowire = "0.2.6"
     val booPickle = "1.2.5"
     val diode = "1.1.0"
     val uTest = "0.4.4"
@@ -49,7 +50,7 @@ object Settings {
     "com.lihaoyi" %%% "autowire" % versions.autowire,
     "me.chrons" %%% "boopickle" % versions.booPickle,
     "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
-    "com.chuusai" %%% "shapeless" % "2.2.5" ,
+//    "com.chuusai" %%% "shapeless" % "2.2.5" ,
     "com.softwaremill.quicklens" %%% "quicklens" % "1.4.8",
     "com.github.julien-truffaut" %%%  "monocle-core"  % versions.monocleVersion,
     "com.github.julien-truffaut" %%%  "monocle-macro" % versions.monocleVersion,
