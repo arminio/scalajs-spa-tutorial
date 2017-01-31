@@ -103,7 +103,8 @@ object ServiceDetailsComp {
     def render(p: Props, state: State) = {
       val isEditing = state.editing
       val editButton = Button(Button.Props($.modState(state => state.copy(editing = !state.editing)), addStyles = Seq(bss.buttonPrimary)), if (isEditing) "Cancel" else "Edit")
-      val saveButton = Button(Button.Props(save(p, state)  ), "Save")
+//      val saveButton = Button(Button.Props(p.proxy.dispatchCB(SaveService(state.service)) >> $.modState(s => s.copy(editing = !s.editing)) ), "Save")
+      val saveButton = <.button(bss.buttonOpt(CommonStyle.default), ^.onClick --> save(p, state) , "Save")
       val backToServicesLink = Button(Button.Props( p.router.set(ServicesLoc), addStyles = Seq(bss.buttonDefault, bss.pullRight)), "Services")
       //      val backToServicesLink = <.a(bss.button, "Services", ^.onClick --> p.router.set(ServicesLoc))
 

@@ -8,6 +8,7 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import spatutorial.client.components.{GlobalStyles, IdProvider, TreeItem}
 
 import scala.collection.immutable.Iterable
+import scala.scalajs.js
 //import japgolly.scalajs.react.extra.router.Action
 import boopickle.Default._
 import spatutorial.shared._
@@ -124,8 +125,10 @@ class ServiceHandler[M](modelRW: ModelRW[M, Pot[Services]]) extends ActionHandle
       updated(Ready(services), Effect(Future.successful(RefreshTree(convertToTreeItems(services)))))
 
     case SaveService(service) =>
+
       println(s"handling save service: $service")
 
+      js.debugger()
 //      updated(value.map(_.updated(service)), Effect(Future.successful(RefreshTree(convertToTreeItems(value.map(_.updated(service)).getOrElse(throw new RuntimeException("Services are not ready")))))))
       updated(value.map(_.updated(service)), Effect(AjaxClient[Api].saveService(service).call().map(UpdateAllServices)))
 //    updated(value.map(_.remove(item)), Effect(AjaxClient[Api].deleteTodo(item.id).call().map(UpdateAllTodos)))
