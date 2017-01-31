@@ -1,5 +1,6 @@
 package spatutorial.client.modules.pages
 
+import diode.data.Pot
 import diode.react.ReactPot._
 import diode.react._
 import japgolly.scalajs.react._
@@ -21,22 +22,23 @@ object ServiceComp {
   class Backend($: BackendScope[Props, _]) {
     def mounted(props: Props) =
     // dispatch a message to refresh the todos, which will cause TodoStore to fetch todos from the server
-      Callback.when(props.proxy().services.isEmpty)(props.proxy.dispatchCB(LoadServices))
+      Callback.when(props.proxy().isEmpty)(props.proxy.dispatchCB(LoadServices))
 
 
     def render(p: Props) = {
-      val servicesPot = p.proxy().services
+      val servicesPot = p.proxy()
 
       Panel(Panel.Props("Service"), <.div(
         servicesPot.renderFailed(ex => "Error loading"),
         servicesPot.renderPending(_ > 5000, _ => "Loading..."),
         servicesPot.render { services => {
 
-          val selectedItemId = p.proxy.value.selectedItemId
-          //!@println(s"rendering ServiceComp2 selectedItemI: $selectedItemId")
+          val selectedItemId = p.serviceId
+          println(s"Searching Services: ${services.services}")
+          js.debugger()
           services.services.find(s => {
 
-            s.id == selectedItemId
+            s.id.str == selectedItemId
           }).map { s =>
             //!@println(s"rendering ServiceDetailsComp2 selectedItemI: $s")
 
@@ -45,7 +47,7 @@ object ServiceComp {
             //          services.services.find(s => s.id == p.serviceIdentifier).map(s => ServiceDetailsComp2(s, p.router, p.proxy))
             .fold(
               //None/empty case
-              <.div(s"service with id: ${selectedItemId} (OR ${selectedItemId.str})  not found!")
+              <.div(s"service with id: ${selectedItemId} not found!")
             )(serviceDetailComp => <.div(serviceDetailComp))
 
         }
@@ -63,10 +65,10 @@ object ServiceComp {
     .build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(router: RouterCtl[Loc], proxy: ModelProxy[RootModel]) = component(Props(router, proxy))
+  def apply(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]], serviceId: String) = component(Props(router, proxy, serviceId))
 
 
-  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[RootModel])
+  case class Props(router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]], serviceId: String)
 
 }
 
@@ -80,14 +82,14 @@ object ServiceDetailsComp {
     //    .componentDidMount(scope => scope.backend.mounted(scope.props))
     .build
 
-  def apply(service: Service, router: RouterCtl[Loc], proxy: ModelProxy[RootModel]) = component(Props(service, router, proxy))
+  def apply(service: Service, router: RouterCtl[Loc], proxy: ModelProxy[Pot[Services]]) = component(Props(service, router, proxy))
 
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
   case class Props(service: Service,
                    router: RouterCtl[Loc],
-                   proxy: ModelProxy[RootModel])
+                   proxy: ModelProxy[Pot[Services]])
 
   case class State(service: Service, editing: Boolean = false)
 

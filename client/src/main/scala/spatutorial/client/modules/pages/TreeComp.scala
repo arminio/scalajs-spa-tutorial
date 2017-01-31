@@ -91,8 +91,8 @@ object Tree {
 
 //      p.proxy.dispatchCB(TreeItemSelected(itemIdentifier)) >>
       val location: Loc = Identifier(itemIdentifier) match {
-        case Identifier("SERVICE",_, _, _) => ServiceLoc(s"#$itemIdentifier")
-        case Identifier("FUNCTION",_, _, _) => FunctionLoc(s"#$itemIdentifier")
+        case Identifier("SERVICE",_, _, _) => ServiceLoc(s"$itemIdentifier")
+        case Identifier("FUNCTION",_, _, _) => FunctionLoc(s"$itemIdentifier")
         case Identifier("SERVICES",_, _, _) => ServicesLoc
         case _ => TreeLoc
       }

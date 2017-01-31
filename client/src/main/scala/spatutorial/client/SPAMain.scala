@@ -53,9 +53,8 @@ object SPAMain extends js.JSApp {
     val functionsWrapper = SPACircuit.connect(_.services.get.services.flatMap(service => service.functions).toMap)
 
     // wrap/connect components to the circuit
-    val idPattern = "[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
-    val servicePattern = "#SERVICE-[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
-    val functionPattern = "#FUNCTION-[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
+    val servicePattern = "SERVICE-[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
+    val functionPattern = "FUNCTION-[a-zA-Z0-9\\-]+" //!@ make this better: Error properly, use Identifier format
 
     (
       staticRoute("#error", ErrorLoc)
@@ -63,7 +62,8 @@ object SPAMain extends js.JSApp {
         |
 
         staticRoute("#tree2", TreeLoc) //!@ rename the url and Loc
-          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp(ctl, props, ServiceComp(ctl, props))))
+          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp(ctl, props, <.h1("Welcome to the tree of life!"))))
+//          ~> renderR(ctl => rootWrapper((props: ModelProxy[RootModel]) => TreeComp(ctl, props, ServiceComp(ctl, props))))
 
         |
         staticRoute("#newservice", NewServiceLoc)
@@ -74,9 +74,10 @@ object SPAMain extends js.JSApp {
         |
 
         ////// new shit
-        dynamicRouteCT(string(functionPattern).caseClass[FunctionLoc]) ~> dynRender { loc => <.h1(s"Chinko Function ${loc.asInstanceOf[FunctionLoc].id}!!!!") }
+        dynamicRouteCT("#" ~ (string(functionPattern)).caseClass[FunctionLoc]) ~> dynRenderR { (loc, ctl) => <.h1(s"Chinko Function ${loc.asInstanceOf[FunctionLoc].id}!!!!") }
         |
-        dynamicRouteCT(string(servicePattern).caseClass[ServiceLoc]) ~> dynRender { loc => <.h1(s"***service****** ${loc.asInstanceOf[ServiceLoc].id}!!!!") }
+        dynamicRouteCT("#" ~ (string(servicePattern)).caseClass[ServiceLoc]) ~> dynRenderR { (loc, ctl) => servicesWrapper((props: ModelProxy[Pot[Services]]) => ServiceComp(ctl, props, loc.asInstanceOf[ServiceLoc].id)) }
+//        dynamicRouteCT(string(servicePattern).caseClass[ServiceLoc]) ~> dynRenderR { (loc, ctl) => <.h1(s"***service****** ${loc.asInstanceOf[ServiceLoc].id}!!!!") }
         |
         staticRoute("#services", ServicesLoc) ~> renderR(ctl => servicesWrapper((props: ModelProxy[Pot[Services]]) => ListOfServicesComp(ctl, props)))
 

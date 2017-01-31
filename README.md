@@ -1,20 +1,5 @@
 sbt> project sharedJS
 sbt> test
-sbt> project sharedJVM
-sbt> test
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
