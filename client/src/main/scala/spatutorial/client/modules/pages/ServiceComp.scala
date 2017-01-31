@@ -11,7 +11,7 @@ import spatutorial.client.components.Bootstrap._
 import spatutorial.client.components.GlobalStyles
 import spatutorial.client.services._
 import spatutorial.shared._
-
+import cats.instances.all._, cats.syntax.eq._
 import scala.scalajs.js
 import scalacss.ScalaCssReact._
 
@@ -38,7 +38,7 @@ object ServiceComp {
           js.debugger()
           services.services.find(s => {
 
-            s.id.str == selectedItemId
+            s.id.str === selectedItemId
           }).map { s =>
             //!@println(s"rendering ServiceDetailsComp2 selectedItemI: $s")
 

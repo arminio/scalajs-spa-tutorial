@@ -40,6 +40,7 @@ object Settings {
 
     val scalajsScripts = "1.0.0"
     val monocleVersion = "1.3.2"
+    val catsVersion = "0.9.0"
   }
 
   /**
@@ -51,6 +52,7 @@ object Settings {
     "me.chrons" %%% "boopickle" % versions.booPickle,
     "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
 //    "com.chuusai" %%% "shapeless" % "2.2.5" ,
+    "org.typelevel" %%% "cats" % versions.catsVersion,
     "com.softwaremill.quicklens" %%% "quicklens" % "1.4.8",
     "com.github.julien-truffaut" %%%  "monocle-core"  % versions.monocleVersion,
     "com.github.julien-truffaut" %%%  "monocle-macro" % versions.monocleVersion,
